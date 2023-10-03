@@ -1,0 +1,153 @@
+body {
+  margin: 3rem;
+  line-height: 1.5;
+  background-color: #eceef9;
+}
+button {
+  min-width: 24px;
+  min-height: 24px;
+  margin: 0.5rem;
+  font-weight: 700;
+  border: solid 0.2rem #03a;
+  border-radius: 0.3rem;
+  color: #fff;
+  background-color: #03a;
+}
+button[disabled] {
+  border-radius: 0;
+  color: #333;
+  background-color: #ccc;
+}
+button:hover:not([disabled]) {
+  color: #000;
+  background-color: #8cf;
+}
+caption {
+  margin-bottom: 1rem;
+  text-align: left;
+}
+caption, .major {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.center {
+  text-align: center;
+}
+code {
+  color: #530;
+}
+.compact > div > p {
+  margin: 0 auto;
+}
+.distinct {
+  background-color: #fc0;
+}
+div.violation {
+  margin: 0.5rem;
+  border: solid darkmagenta 3px;
+  padding: 0 0.5rem 0.5rem 0.5rem;
+}
+dt {
+  font-weight: 700;
+}
+.error {
+  color: #f00;
+}
+fieldset {
+  margin-bottom: 1rem;
+  width: fit-content;
+}
+*:focus {
+  outline: 0.125rem solid #00f;
+  outline-offset: 0.125rem;
+}
+h2 {
+  font-size: 1.8rem;
+  color: darkmagenta;
+}
+h2 + ul, h3 + ul, h4 + ul {
+  margin-top: 0.5rem;
+}
+h3 {
+  font-size: 1.6rem;
+  margin-bottom: 0.5rem;
+}
+h4 {
+  font-size: 1.4rem;
+  color: darkmagenta;
+  margin-bottom: 0.1rem;
+}
+h5 {
+  font-size: 1.2rem;
+}
+h6 {
+  margin: 1rem auto;
+  font-size: 1rem;
+  color: darkmagenta;
+}
+input:not([type]), input[type=number] {
+  margin-left: 0.5rem;
+}
+input[type=checkbox], input[type=radio] {
+  margin-right: 0.5rem;
+}
+.invisible {
+  display: none;
+}
+.left {
+  text-align: left;
+}
+legend {
+  font-weight: bold;
+}
+pre {
+  white-space: pre-wrap;
+}
+q {
+  quotes: '“' '”';
+}
+#responseError > p {
+  border: 0.2rem solid #f00;
+  padding: 0.5rem;
+  font-weight: 700;
+  color: #f00;
+}
+.right {
+  text-align: right;
+}
+span.tagName {
+  display: inline-block;
+  border: dotted darkmagenta 2px;
+  font-family: monospace;
+}
+.sumTable > tbody > tr > td, tfoot > tr > td {
+  text-align: right;
+}
+table {
+  margin-top: 1rem;
+  border-collapse: collapse;
+}
+table > tbody > tr > th {
+  text-align: left;
+}
+table.noBorder, table.noBorder th, table.noBorder td {
+  border: none !important;
+  padding: 0.2rem 0 0.2rem 1rem;
+}
+table.thFlat th {
+  white-space: nowrap;
+}
+td, th {
+  padding: 0 0.2rem;
+  border: 0.1rem #555 solid;
+}
+ul.links > li {
+  margin: 0.5rem auto;
+}
+.vertical > label {
+  display: block;
+  margin: 0.25rem auto;
+}
+.wrap {
+  word-break: break-all;
+}
