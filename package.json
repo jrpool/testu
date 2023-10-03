@@ -1,0 +1,26 @@
+{
+  "name": "testu",
+  "version": "1.0.0",
+  "description": "Ask Testaro to test a web page for accessibility",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jrpool/testu"
+  },
+  "keywords": ["accessibility", "a11y", "testing"],
+  "author": "Jonathan Robert Pool <pool@jpdev.pro>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jrpool/testu/issues"
+  },
+  "homepage": "https://github.com/jrpool/testaro",
+  "dependencies": {
+    "dotenv": "*"
+  },
+  "devDependencies": {
+    "eslint": "*"
+  }
+}
