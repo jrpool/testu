@@ -24,6 +24,7 @@ const script = require('testilo/scripts/ts36.json');
 
 // ########## CONSTANTS
 
+const protocol = process.env.PROTOCOL || 'http';
 const jobs = {
   todo: {},
   assigned: {}
@@ -42,11 +43,6 @@ const reportProperties = [
 
 // ########## FUNCTIONS
 
-// Serves a digest.
-const serveDigest = async (id, response) => {
-  const digest = await fs.readFile(`reports/${id}.html`, 'utf8');
-  response.end(digest);
-};
 // Serves the result page.
 const serveResult = async (requestParams, result, isEnd, response) => {
   let resultPage = await fs.readFile('result.html', 'utf8');
@@ -54,7 +50,7 @@ const serveResult = async (requestParams, result, isEnd, response) => {
     const paramRegEx = new RegEx(`__${paramName}__`, 'g');
     resultPage = resultPage.replace(paramRegEx, params[paramName]);
   });
-  resultPage = resultPage.replace('__result__', result);)
+  resultPage = resultPage.replace('__result__', result);
   response.setHeader('Content-Type', 'text/html; charset=utf-8');
   response.setHeader('Content-Location', 'result.html');
   response.write(resultPage);
@@ -66,8 +62,24 @@ const serveResult = async (requestParams, result, isEnd, response) => {
 const serveError = async (requestParams, error, response) => {
   console.log(error.message);
   if (! response.writableEnded) {
+    if (! requestParams) {
+      requestParams = {
+        pageURL: 'N/A',
+        pageWhat: 'N/A'
+      };
+    }
     response.statusCode = 400;
     await serveResult(requestParams, error.message, true, response);
+  }
+};
+// Serves a digest.
+const serveDigest = async (id, response) => {
+  try {
+    const digest = await fs.readFile(`reports/${id}.html`, 'utf8');
+    response.end(digest);    
+  }
+  catch(error) {
+    await serveError(null, error, response);
   }
 };
 // Serves an object as a JSON file.
@@ -107,7 +119,7 @@ const requestHandler = async (request, response) => {
     // Otherwise, if it is for a digest:
     else if (requestURL.startsWith('/testu/report/') && requestURL.endsWith('.html')) {
       // Serve the digest.
-
+      await serveDigest(requestURL.slice(14, -5), response);
     }
     // Otherwise, if it is any other GET request:
     else {
@@ -129,7 +141,7 @@ const requestHandler = async (request, response) => {
       bodyParts.push(chunk);
     })
     // When the request has arrived:
-    .on('end', () => {
+    .on('end', async () => {
       // Initialize the request data.
       const requestData = {};
       // Get a query string from the request body.
@@ -153,7 +165,7 @@ const requestHandler = async (request, response) => {
           const jobBatch = batch(
             'testuList', '1 target', [['target', pageData.pageWhat, pageData.pageURL]]
           );
-          const job = testilo.merge(JSON.parse(script), jobBatch);
+          const job = merge(JSON.parse(script), jobBatch);
           jobs.todo[timeStamp] = {
             job,
             response
@@ -164,7 +176,7 @@ const requestHandler = async (request, response) => {
       else if (requestURL === '/testu/api/report') {
         // If the report is valid:
         const {report} = requestData;
-        if (report && reportProperties.every(propertyName => report[propertyName])) {
+        if (report && reportProperties.every(propertyName => Object.hasOwn(report, propertyName))) {
           // Send an acknowledgement to the agent.
           response.end(`Report ${report.id} received and validated`);
           // Score and save it.
