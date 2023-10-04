@@ -91,17 +91,23 @@ const requestHandler = async (request, response) => {
   const requestURL = request.url.replace(/\/$/, '');
   // If the request is a GET request:
   if (method === 'GET') {
+    console.log(requestURL);
     // If it is for the stylesheet:
     if (requestURL === '/testu/style.css') {
       // Serve it.
       const styleSheet = await fs.readFile('style.css', 'utf8');
-      response.write(styleSheet);
+      response.end(styleSheet);
     }
     // Otherwise, if it is for the script:
-    if (requestURL === '/testu/script') {
+    else if (requestURL === '/testu/script') {
       // Serve it.
       const script = await fs.readFile('script.js', 'utf8');
-      response.write(script);
+      response.end(script);
+    }
+    // Otherwise, if it is for the application icon:
+    else if (requestURL === '/favicon.ico') {
+      // Serve nothing.
+      response.end('');
     }
     // Otherwise, if it is for the request form:
     else if (['/testu', '/testu/index.html'].some(suffix => requestURL.endsWith(suffix))) {
