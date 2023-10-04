@@ -19,7 +19,7 @@ const {merge} = require('testilo/merge');
 const {scorer} = require('testilo/procs/score/tsp36');
 const {score} = require('testilo/score');
 const {digest} = require('testilo/digest');
-const {digester} = require('testilo/procs/digest/index');
+const {digester} = require('testilo/procs/digest/tdp36/index');
 const script = require('testilo/scripts/ts36.json');
 
 // ########## CONSTANTS
@@ -59,17 +59,14 @@ const serveResult = async (requestParams, result, isEnd, response) => {
   }
 };
 // Serves an error message.
-const serveError = async (requestParams, error, response) => {
+const serveError = async (error, response) => {
   console.log(error.message);
   if (! response.writableEnded) {
-    if (! requestParams) {
-      requestParams = {
-        pageURL: 'N/A',
-        pageWhat: 'N/A'
-      };
-    }
     response.statusCode = 400;
-    await serveResult(requestParams, error.message, true, response);
+    await serveResult({
+      pageURL: 'N/A',
+      pageWhat: 'N/A'
+    }, error.message, true, response);
   }
 };
 // Serves a digest.
@@ -79,7 +76,7 @@ const serveDigest = async (id, response) => {
     response.end(digest);    
   }
   catch(error) {
-    await serveError(null, error, response);
+    await serveError(error, response);
   }
 };
 // Serves an object as a JSON file.
@@ -94,8 +91,14 @@ const requestHandler = async (request, response) => {
   const requestURL = request.url.replace(/\/$/, '');
   // If the request is a GET request:
   if (method === 'GET') {
-    // If it is from a testing agent for a job to do:
-    if (requestURL.startsWith('/testu/api/job')) {
+    // If it is for the request form:
+    if (['/testu', '/testu/index.html'].includes(requestURL)) {
+      // Serve it.
+      const formPage = await fs.readFile(`index.html`, 'utf8');
+      response.end(formPage);    
+    }
+    // Otherwise, if it is from a testing agent for a job to do:
+    else if (requestURL.startsWith('/testu/api/job')) {
       // If the agent is authorized:
       const requestQuery = requestURL.search;
       const queryParams = new URLSearchParams(requestQuery);
@@ -131,11 +134,7 @@ const requestHandler = async (request, response) => {
   else if (method === 'POST') {
     const bodyParts = [];
     request.on('error', async err => {
-      const requestParams = {
-        pageURL: 'N/A',
-        pageWhat: 'N/A'
-      };
-      await serveError(requestParams, err, response);
+      await serveError(err, response);
     })
     .on('data', chunk => {
       bodyParts.push(chunk);
