@@ -180,7 +180,7 @@ const requestHandler = async (request, response) => {
           // Convert it to a Testaro job.
           const timeStamp = new Date().toISOString().replace(/[-:]/g, '').slice(0, 15);
           const jobBatch = batch(
-            'testuList', '1 target', [['target', pageData.pageWhat, pageData.pageURL]]
+            'testuList', '1 target', [['target', requestData.pageWhat, requestData.pageURL]]
           );
           const job = merge(JSON.parse(script), jobBatch);
           jobs.todo[timeStamp] = {
