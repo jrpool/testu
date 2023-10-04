@@ -14,14 +14,39 @@ const http = require('http');
 // Module to create an HTTPS server and client.
 const https = require('https');
 // Module to handle Testaro jobs.
-const testilo = require('testilo');
+const {batch} = require('testilo/batch');
+const {merge} = require('testilo/merge');
+const {scorer} = require('testilo/procs/score/tsp36');
+const {score} = require('testilo/score');
+const {digest} = require('testilo/digest');
+const {digester} = require('testilo/procs/digest/index');
+const script = require('testilo/scripts/ts36.json');
 
 // ########## CONSTANTS
 
-const jobs = {};
+const jobs = {
+  todo: {},
+  assigned: {}
+};
+const reportProperties = [
+  'id',
+  'what',
+  'strict',
+  'timeLimit',
+  'acts',
+  'sources',
+  'creationTime',
+  'timeStamp',
+  'jobData'
+];
 
 // ########## FUNCTIONS
 
+// Serves a digest.
+const serveDigest = async (id, response) => {
+  const digest = await fs.readFile(`reports/${id}.html`, 'utf8');
+  response.end(digest);
+};
 // Serves the result page.
 const serveResult = async (requestParams, result, isEnd, response) => {
   let resultPage = await fs.readFile('result.html', 'utf8');
@@ -45,15 +70,58 @@ const serveError = async (requestParams, error, response) => {
     await serveResult(requestParams, error.message, true, response);
   }
 };
+// Serves an object as a JSON file.
+const serveObject = (object, response) => {
+  response.setHeader('Content-Type', 'application/json; charset=utf-8');
+  response.end(JSON.stringify(object));
+};
 // Handles a request.
 const requestHandler = async (request, response) => {
   const {method} = request;
-  if (method === 'POST') {
+  // Get its URL, without any trailing slash.
+  const requestURL = request.url.replace(/\/$/, '');
+  // If the request is a GET request:
+  if (method === 'GET') {
+    // If it is from a testing agent for a job to do:
+    if (requestURL.startsWith('/testu/api/job')) {
+      // If the agent is authorized:
+      const requestQuery = requestURL.search;
+      const queryParams = new URLSearchParams(requestQuery);
+      const agent = queryParams.get('agent');
+      if (['TXRIWin', 'RIWSMac', 'PoolMac'].includes(agent)) {
+        // Choose the first-created job not yet assigned.
+        const jobTimeStamps = Object.keys(jobs);
+        const firstTimeStamp = Math.min(jobTimeStamps);
+        // Assign it to the agent.
+        const {job} = jobs.todo[firstTimeStamp];
+        serveObject(job);
+        jobs.assigned[firstTimeStamp] = job;
+        delete jobs.todo[firstTimeStamp];
+      }
+      // Otherwise, i.e. if the agent is not authorized:
+      else {
+        // Report this.
+        console.log(`ERROR: Job request made by unauthorized agent ${agent}`);
+      }
+    }
+    // Otherwise, if it is for a digest:
+    else if (requestURL.startsWith('/testu/report/') && requestURL.endsWith('.html')) {
+      // Serve the digest.
+
+    }
+    // Otherwise, if it is any other GET request:
+    else {
+      // Report this.
+      console.log('ERROR: Invalid GET request received');
+    }
+  }
+  // Otherwise, if the request is a POST request:
+  else if (method === 'POST') {
     const bodyParts = [];
     request.on('error', async err => {
       const requestParams = {
         pageURL: 'N/A',
-        pageWhat:'N/A'
+        pageWhat: 'N/A'
       };
       await serveError(requestParams, err, response);
     })
@@ -62,8 +130,6 @@ const requestHandler = async (request, response) => {
     })
     // When the request has arrived:
     .on('end', () => {
-      // Get its URL, without any trailing slash.
-      const requestURL = request.url.replace(/\/$/, '');
       // Initialize the request data.
       const requestData = {};
       // Get a query string from the request body.
@@ -83,32 +149,53 @@ const requestHandler = async (request, response) => {
           && requestData.pageWhat
         ){
           // Convert it to a Testaro job.
-          const timestamp = new Date().toISOString().replace(/[-:]/g, '').slice(0, 15);
-          const batch = [[jobID, pageData.pageWhat, pageData.pageURL]];
-          const script = await fs.readFile('testilo/scripts/tsp36.js');
-          const job = testilo.merge(script, batch);
-          jobs[timestamp] = job;
-          // Acknowledge receipt.
-          await serveResult()
+          const timeStamp = new Date().toISOString().replace(/[-:]/g, '').slice(0, 15);
+          const jobBatch = batch(
+            'testuList', '1 target', [['target', pageData.pageWhat, pageData.pageURL]]
+          );
+          const job = testilo.merge(JSON.parse(script), jobBatch);
+          jobs.todo[timeStamp] = {
+            job,
+            response
+          };
         }
       }
-      const pathParts = [pathName.slice(1, -1), Number.parseInt(pathName.slice(-1), 10)];
-      if (
-        pathName[0] === '/'
-        && postPaths[pathParts[0]]
-        && pathParts[1] >= postPaths[pathParts[0]][0]
-        && pathParts[1] <= postPaths[pathParts[0]][1]
-      ) {
-        // Process the submission.
-        require(`.${pathName}`).formHandler(globals, query, response);
+      // Otherwise, if the request is a job report from a testing agent:
+      else if (requestURL === '/testu/api/report') {
+        // If the report is valid:
+        const {report} = requestData;
+        if (report && reportProperties.every(propertyName => report[propertyName])) {
+          // Send an acknowledgement to the agent.
+          response.end(`Report ${report.id} received and validated`);
+          // Score and save it.
+          await fs.mkdir('reports', {recursive: true});
+          score(scorer, [report]);
+          await fs.writeFile(`reports/${report.id}.json`, `${JSON.stringify(report, null, 2)}\n`);
+          // Digest it and save the digest.
+          const digests = await digest(digester, [[report]]);
+          await fs.writeFile(`reports/${report.id}.html`, digests[0]);
+          // Notify the requester that the digest is ready to retrieve.
+          const jobResponse = jobs.assigned[report.timeStamp].response;
+          const requestParams = {
+            pageURL: report.sources.target.which,
+            pageWhat: report.sources.target.what
+          };
+          const result = `<p><a href="${appURL}/report/${report.id}.html">Digest ${report.id}</a> is complete and ready to retrieve.</p>`;
+          await serveResult(requestParams, result, true, jobResponse);
+        }
+        // Otherwise, i.e. if the report is invalid:
+        else {
+          // Report this.
+          console.log(`ERROR: Invalid job report received from agent `)
+        }
       }
-      // Otherwise, i.e. if the request is invalid:
-      else {
-        // Serve an error message.
-        globals.serveMessage('ERROR: Form submission invalid.', response);
-      }
-    }
-  });
+    });
+  }
+  // Otherwise, i.e. if it uses another method:
+  else {
+    // Report this.
+    console.log(`ERROR: Request with method ${method} received`);
+  }
 };
 // ########## SERVER
 const serve = (protocolModule, options) => {
