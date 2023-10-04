@@ -4,9 +4,8 @@
 */
 
 document.getElementById('form').addEventListener('submit', event => {
-  event.preventDefault();
-  document.getElementById('submit').setAttribute('disabled');
+  document.getElementById('submit').classList.add('invisible');
   document
   .getElementById('status')
-  .textContent = 'Request being processed. Please leave this page open and wait up to 5 minutes for the result.';
+  .textContent = 'Request being processed. Please leave this page open, and wait up to 5 minutes for the result.';
 });

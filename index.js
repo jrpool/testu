@@ -91,7 +91,6 @@ const requestHandler = async (request, response) => {
   const requestURL = request.url.replace(/\/$/, '');
   // If the request is a GET request:
   if (method === 'GET') {
-    console.log(requestURL);
     // If it is for the stylesheet:
     if (requestURL === '/testu/style.css') {
       // Serve it.
@@ -182,7 +181,7 @@ const requestHandler = async (request, response) => {
           const jobBatch = batch(
             'testuList', '1 target', [['target', requestData.pageWhat, requestData.pageURL]]
           );
-          const job = merge(JSON.parse(script), jobBatch);
+          const job = merge(script, jobBatch);
           jobs.todo[timeStamp] = {
             job,
             response
