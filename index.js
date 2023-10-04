@@ -8,7 +8,7 @@
 // Module to keep secrets local.
 require('dotenv').config();
 // Module to access files.
-globals.fs = require('fs/promises');
+const fs = require('fs/promises');
 // Module to create an HTTP server and client.
 const http = require('http');
 // Module to create an HTTPS server and client.
