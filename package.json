@@ -2,7 +2,7 @@
   "name": "testu",
   "version": "1.0.0",
   "description": "Ask Testaro to test a web page for accessibility",
-  "main": "index.html",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
