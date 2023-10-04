@@ -91,8 +91,20 @@ const requestHandler = async (request, response) => {
   const requestURL = request.url.replace(/\/$/, '');
   // If the request is a GET request:
   if (method === 'GET') {
-    // If it is for the request form:
-    if (['/testu', '/testu/index.html'].includes(requestURL)) {
+    // If it is for the stylesheet:
+    if (requestURL === '/testu/style.css') {
+      // Serve it.
+      const styleSheet = await fs.readFile('style.css', 'utf8');
+      response.write(styleSheet);
+    }
+    // Otherwise, if it is for the script:
+    if (requestURL === '/testu/script') {
+      // Serve it.
+      const script = await fs.readFile('script.js', 'utf8');
+      response.write(script);
+    }
+    // Otherwise, if it is for the request form:
+    else if (['/testu', '/testu/index.html'].some(suffix => requestURL.endsWith(suffix))) {
       // Serve it.
       const formPage = await fs.readFile(`index.html`, 'utf8');
       response.end(formPage);    
