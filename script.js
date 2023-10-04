@@ -3,7 +3,8 @@
   Used by index.html.
 */
 
-document.getElementById('form').addEventListener('submit', () => {
+document.getElementById('form').addEventListener('submit', event => {
+  event.preventDefault();
   document.getElementById('submit').setAttribute('disabled');
   document
   .getElementById('status')
