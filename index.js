@@ -211,7 +211,7 @@ const requestHandler = async (request, response) => {
 // ########## SERVER
 const serve = (protocolModule, options) => {
   const server = protocolModule.createServer(options, requestHandler);
-  const port = process.env.PORT || '3000';
+  const port = process.env.PORT || '3007';
   server.listen(port, () => {
     console.log(`CAT server listening at ${protocol}://localhost:${port}.`);
   });
