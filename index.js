@@ -228,7 +228,7 @@ const requestHandler = async (request, response) => {
         else {
           // Report this.
           console.log(`ERROR: Invalid job report received from agent `);
-          response.end(`Report ${report.id} received, but it was invalid`);
+          response.end(`Report received, but it was invalid`);
         }
       }
     });
