@@ -207,7 +207,7 @@ const requestHandler = async (request, response) => {
         const {report} = requestData;
         if (report && reportProperties.every(propertyName => Object.hasOwn(report, propertyName))) {
           // Send an acknowledgement to the agent.
-          response.end({
+          serveObject({
             message: `Report ${report.id} received and validated`
           });
           // Score and save it.
@@ -230,7 +230,7 @@ const requestHandler = async (request, response) => {
         else {
           // Report this.
           console.log(`ERROR: Invalid job report received from agent `);
-          response.end({
+          serveObject({
             message: `Report received, but it was invalid`
           });
         }
