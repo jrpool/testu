@@ -1,0 +1,17 @@
+{
+  "id": "ts36a",
+  "what": "comprehensive accessibility tests with webkit and redirection permitted",
+  "strict": false,
+  "timeLimit": 330,
+  "acts": [
+    {
+      "type": "placeholder",
+      "which": "main",
+      "launch": "webkit"
+    },
+    {
+      "type": "test",
+      "which": "alfa"
+    }
+  ]
+}

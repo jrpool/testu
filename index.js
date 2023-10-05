@@ -15,12 +15,13 @@ const http = require('http');
 const https = require('https');
 // Module to handle Testaro jobs.
 const {batch} = require('testilo/batch');
+process.env.REPORT_URL ??= 'http://localhost:3008/testu/api/report';
 const {merge} = require('testilo/merge');
 const {scorer} = require('testilo/procs/score/tsp36');
 const {score} = require('testilo/score');
 const {digest} = require('testilo/digest');
 const {digester} = require('testilo/procs/digest/tdp36/index');
-const script = require('testilo/scripts/ts36.json');
+const script = require('./scripts/ts36a.json');
 
 // ########## CONSTANTS
 
@@ -117,18 +118,30 @@ const requestHandler = async (request, response) => {
     // Otherwise, if it is from a testing agent for a job to do:
     else if (requestURL.startsWith('/testu/api/job')) {
       // If the agent is authorized:
-      const requestQuery = requestURL.search;
+      const requestQuery = requestURL.replace(/^[^?]+/, '');
       const queryParams = new URLSearchParams(requestQuery);
       const agent = queryParams.get('agent');
       if (['TXRIWin', 'RIWSMac', 'PoolMac'].includes(agent)) {
-        // Choose the first-created job not yet assigned.
-        const jobTimeStamps = Object.keys(jobs);
-        const firstTimeStamp = Math.min(jobTimeStamps);
-        // Assign it to the agent.
-        const {job} = jobs.todo[firstTimeStamp];
-        serveObject(job);
-        jobs.assigned[firstTimeStamp] = job;
-        delete jobs.todo[firstTimeStamp];
+        // If there are any jobs to be assigned:
+        if (Object.keys(jobs.todo).length) {
+          // Choose the first-created job not yet assigned.
+          const jobTimeStamps = Object.keys(jobs.todo);
+          const firstTimeStamp = jobTimeStamps.reduce(
+            (first, current) => current < first ? current : first
+          );
+          // Assign it to the agent.
+          const {job} = jobs.todo[firstTimeStamp];
+          serveObject(job, response);
+          jobs.assigned[firstTimeStamp] = job;
+          delete jobs.todo[firstTimeStamp];
+        }
+        // Otherwise, i.e. if there are no jobs to be assigned:
+        else {
+          // Notify the agent.
+          serveObject({
+            message: `No network job at ${protocol}://${request.headers.host} to do`
+          }, response);
+        }
       }
       // Otherwise, i.e. if the agent is not authorized:
       else {
@@ -228,7 +241,7 @@ const requestHandler = async (request, response) => {
 // ########## SERVER
 const serve = (protocolModule, options) => {
   const server = protocolModule.createServer(options, requestHandler);
-  const port = process.env.PORT || '3007';
+  const port = process.env.PORT || '3008';
   server.listen(port, () => {
     console.log(`Testu server listening at ${protocol}://localhost:${port}.`);
   });
