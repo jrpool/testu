@@ -209,7 +209,7 @@ const requestHandler = async (request, response) => {
           // Send an acknowledgement to the agent.
           serveObject({
             message: `Report ${report.id} received and validated`
-          });
+          }, response);
           // Score and save it.
           await fs.mkdir('reports', {recursive: true});
           score(scorer, [report]);
@@ -232,7 +232,7 @@ const requestHandler = async (request, response) => {
           console.log(`ERROR: Invalid job report received from agent `);
           serveObject({
             message: `Report received, but it was invalid`
-          });
+          }, response);
         }
       }
     });
