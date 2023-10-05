@@ -181,7 +181,7 @@ const requestHandler = async (request, response) => {
           const jobBatch = batch(
             'testuList', '1 target', [['target', requestData.pageWhat, requestData.pageURL]]
           );
-          const job = merge(script, jobBatch);
+          const job = merge(script, jobBatch, null, true)[0];
           jobs.todo[timeStamp] = {
             job,
             response
