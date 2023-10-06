@@ -54,7 +54,7 @@ const serveResult = async (requestParams, result, isEnd, response) => {
   let resultPage = await fs.readFile('result.html', 'utf8');
   Object.keys(requestParams).forEach(paramName => {
     const paramRegExp = new RegExp(`__${paramName}__`, 'g');
-    resultPage = resultPage.replace(paramRegExp, params[paramName]);
+    resultPage = resultPage.replace(paramRegExp, requestParams[paramName]);
   });
   resultPage = resultPage.replace('__result__', result);
   response.setHeader('Content-Type', 'text/html; charset=utf-8');
