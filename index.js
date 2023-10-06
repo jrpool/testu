@@ -15,12 +15,17 @@ const http = require('http');
 const https = require('https');
 // Module to handle Testaro jobs.
 const {batch} = require('testilo/batch');
-process.env.REPORT_URL ??= 'http://localhost:3008/testu/api/report';
+// URL of testu for users.
+process.env.APP_URL ??= 'http://localhost:3008/testu';
+// URL for Testilo to use as the value of sources.sendReportTo in jobs.
+process.env.REPORT_URL = `${process.env.APP_URL}/api/report`;
+// Functions from Testilo.
 const {merge} = require('testilo/merge');
 const {scorer} = require('testilo/procs/score/tsp36');
 const {score} = require('testilo/score');
 const {digest} = require('testilo/digest');
 const {digester} = require('testilo/procs/digest/tdp36/index');
+// Script object.
 const script = require('./scripts/ts36a.json');
 
 // ########## CONSTANTS
@@ -126,19 +131,19 @@ const requestHandler = async (request, response) => {
         // If there are any jobs to be assigned:
         if (Object.keys(jobs.todo).length) {
           // Choose the first-created job not yet assigned.
-          const jobTimeStamps = Object.keys(jobs.todo);
-          const firstTimeStamp = jobTimeStamps.reduce(
+          const jobIDs = Object.keys(jobs.todo);
+          const firstJobID = jobIDs.reduce(
             (first, current) => current < first ? current : first
           );
           // Assign it to the agent.
-          const {job} = jobs.todo[firstTimeStamp];
+          const {job} = jobs.todo[firstJobID];
           serveObject(job, response);
-          jobs.assigned[firstTimeStamp] = {
+          jobs.assigned[firstJobID] = {
             job,
             response
           };
-          delete jobs.todo[firstTimeStamp];
-          console.log(`Job ${job.id} assigned to agent ${agent}`);
+          delete jobs.todo[firstJobID];
+          console.log(`Job ${firstJobID} assigned to agent ${agent}`);
         }
         // Otherwise, i.e. if there are no jobs to be assigned:
         else {
@@ -194,12 +199,11 @@ const requestHandler = async (request, response) => {
           && requestData.pageWhat
         ){
           // Convert it to a Testaro job.
-          const timeStamp = new Date().toISOString().replace(/[-:]/g, '').slice(0, 15);
           const jobBatch = batch(
             'testuList', '1 target', [['target', requestData.pageWhat, requestData.pageURL]]
           );
           const job = merge(script, jobBatch, null, true)[0];
-          jobs.todo[timeStamp] = {
+          jobs.todo[job.id] = {
             job,
             response
           };
@@ -235,7 +239,7 @@ const requestHandler = async (request, response) => {
             const jobDigest = Object.values(digests)[0];
             await fs.writeFile(`reports/${report.id}.html`, jobDigest);
             // Notify the requester that the digest is ready to retrieve.
-            const jobResponse = jobs.assigned[report.timeStamp].response;
+            const jobResponse = jobs.assigned[report.id].response;
             const requestParams = {
               pageURL: report.sources.target.which,
               pageWhat: report.sources.target.what
