@@ -50,15 +50,17 @@ const reportProperties = [
 // ########## FUNCTIONS
 
 // Serves the result page.
-const serveResult = async (requestParams, result, isEnd, response) => {
+const serveResult = async (requestParams, result, isStart, isEnd, response) => {
   let resultPage = await fs.readFile('result.html', 'utf8');
   Object.keys(requestParams).forEach(paramName => {
     const paramRegExp = new RegExp(`__${paramName}__`, 'g');
     resultPage = resultPage.replace(paramRegExp, requestParams[paramName]);
   });
   resultPage = resultPage.replace('__result__', result);
-  response.setHeader('Content-Type', 'text/html; charset=utf-8');
-  response.setHeader('Content-Location', 'result.html');
+  if (isStart) {
+    response.setHeader('Content-Type', 'text/html; charset=utf-8');
+    response.setHeader('Content-Location', 'result.html');
+  }
   response.write(resultPage);
   if (isEnd) {
     response.end();
@@ -72,7 +74,7 @@ const serveError = async (error, response) => {
     await serveResult({
       pageURL: 'N/A',
       pageWhat: 'N/A'
-    }, error.message, true, response);
+    }, error.message, true, true, response);
   }
 };
 // Serves a digest.
@@ -245,7 +247,7 @@ const requestHandler = async (request, response) => {
               pageWhat: report.sources.target.what
             };
             const result = `<p><a href="${process.env.APP_URL}/report/${report.id}.html">Digest ${report.id}</a> of Testaro results is complete and ready to retrieve.</p>`;
-            await serveResult(requestParams, result, true, jobResponse);
+            await serveResult(requestParams, result, false, true, jobResponse);
           }
           // Otherwise, i.e. if the report is invalid:
           else {
