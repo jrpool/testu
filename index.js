@@ -77,11 +77,18 @@ const serveObject = (object, response) => {
 // Handles a request.
 const requestHandler = async (request, response) => {
   const {method} = request;
-  // Get its URL, without any trailing slash.
-  const requestURL = request.url.replace(/\/$/, '');
-  // If the request is a GET request:
-  if (method === 'GET') {
+  // Get its URL.
+  const requestURL = request.url;
+  // If the URL ends with a slash:
+  if (requestURL.endsWith('/')) {
+    // Redirect the client permanently.
+    response.writeHead(301, {'Location': requestURL.slice(0, -1)});
+    response.end();
+  }
+  // Otherwise, if the request is a GET request:
+  else if (method === 'GET') {
     // If it is for the stylesheet:
+    console.log(`requestURL is ${requestURL}`);
     if (requestURL === '/testu/style.css') {
       // Serve it.
       const styleSheet = await fs.readFile('style.css', 'utf8');
@@ -99,10 +106,11 @@ const requestHandler = async (request, response) => {
       response.end('');
     }
     // Otherwise, if it is for the request form:
-    else if (['/testu', '/testu/index.html'].some(suffix => requestURL.endsWith(suffix))) {
+    else if (['/testu', '/testu/index.html'].includes(requestURL)) {
       // Serve it, leaving the connection open for the result to be added.
       const formPage = await fs.readFile(`index.html`, 'utf8');
-      response.write(formPage);
+      response.setHeader('Content-Location', '/testu');
+      response.end(formPage);
     }
     // Otherwise, if it is from a testing agent for a job to do:
     else if (requestURL.startsWith('/testu/api/job')) {
@@ -194,7 +202,8 @@ const requestHandler = async (request, response) => {
           const resultPage = resultTemplate
           .replace('__pageWhat__', requestData.pageWhat)
           .replace('__pageURL__', requestData.pageURL)
-          .replace(/__digestURL__/g, `${process.env.APP_URL}/reports/${job.id}.html`);
+          .replace(/__digestURL__/g, `${process.env.APP_URL}/report/${job.id}.html`);
+          response.setHeader('Content-Location', '/testu/result.html');
           response.end(resultPage);
         }
         // Otherwise, i.e. if the request is invalid:
