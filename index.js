@@ -220,7 +220,7 @@ const requestHandler = async (request, response) => {
       else if (requestURL === '/testu/api/report') {
         // If the report is valid:
         const reportJSON = Buffer.concat(bodyParts).toString();
-        // If the report is JSON:
+        // If the report is processed:
         try {
           const report = JSON.parse(reportJSON);
           // If it is valid:
@@ -256,12 +256,11 @@ const requestHandler = async (request, response) => {
             }, response);
           }
         }
-        // Otherwise, i.e. if the report is not JSON:
+        // Otherwise, i.e. if the report is not processed:
         catch(error) {
-          // Report this to the agent.
+          // Report this.
           const message = 'ERROR: Report processing failed';
           console.log(`${message} (${error.message})`);
-          serveObject({message});
         }
       }
     });
