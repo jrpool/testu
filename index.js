@@ -187,10 +187,15 @@ const requestHandler = async (request, response) => {
             'testuList', '1 target', [['target', requestData.pageWhat, requestData.pageURL]]
           );
           const job = merge(script, jobBatch, null, true)[0];
-          jobs.todo[job.id] = {
-            job,
-            response
-          };
+          // Add it to the jobs to be done.
+          jobs.todo[job.id] = job;
+          // Serve a result page to the requester.
+          const resultTemplate = await fs.readFile('result.html', 'utf8');
+          const resultPage = resultTemplate
+          .replace('__pageWhat__', requestData.pageWhat)
+          .replace('__pageURL__', requestData.pageURL)
+          .replace(/__digestURL__/g, `${process.env.APP_URL}/reports/${job.id}.html`);
+          response.end(resultPage);
         }
         // Otherwise, i.e. if the request is invalid:
         else {
@@ -222,10 +227,6 @@ const requestHandler = async (request, response) => {
             const digests = await digest(digester, [report]);
             const jobDigest = Object.values(digests)[0];
             await fs.writeFile(`reports/${report.id}.html`, jobDigest);
-            // Notify the requester that the digest is ready to retrieve.
-            const jobResponse = jobs.assigned[report.id].response;
-            const moreText = `<p><a href="${process.env.APP_URL}/report/${report.id}.html">Digest ${report.id}</a> of Testaro results is complete and ready to retrieve.</p>`;
-            jobResponse.end(moreText);
           }
           // Otherwise, i.e. if the report is invalid:
           else {

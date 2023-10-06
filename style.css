@@ -120,6 +120,9 @@ span.tagName {
   border: dotted darkmagenta 2px;
   font-family: monospace;
 }
+status {
+  font-weight: 700;
+}
 .sumTable > tbody > tr > td, tfoot > tr > td {
   text-align: right;
 }
