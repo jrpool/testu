@@ -173,16 +173,16 @@ const requestHandler = async (request, response) => {
     .on('end', async () => {
       // Initialize the request data.
       const requestData = {};
-      // Get a query string from the request body.
-      const queryString = Buffer.concat(bodyParts).toString();
-      // Parse it as an array of key-value pairs.
-      const requestParams = new URLSearchParams(queryString);
-      // Convert it to an object with string or array-valued properties.
-      requestParams.forEach((value, name) => {
-        requestData[name] = value;
-      });
       // If the request is from a user for a job to be performed:
       if (requestURL === '/testu') {
+        // Get a query string from the request body.
+        const queryString = Buffer.concat(bodyParts).toString();
+        // Parse it as an array of key-value pairs.
+        const requestParams = new URLSearchParams(queryString);
+        // Convert it to an object with string- or array-valued properties.
+        requestParams.forEach((value, name) => {
+          requestData[name] = value;
+        });
         // If the request is valid:
         if (
           requestData.pageURL
@@ -200,39 +200,59 @@ const requestHandler = async (request, response) => {
             response
           };
         }
+        // Otherwise, i.e. if the request is invalid:
+        else {
+          // Report this to the requester.
+          const message = 'ERROR: invalid request';
+          console.log(message);
+          await serveError(message, response);
+        }
       }
       // Otherwise, if the request is a job report from a testing agent:
       else if (requestURL === '/testu/api/report') {
         // If the report is valid:
-        const {report} = requestData;
-        if (report && reportProperties.every(propertyName => Object.hasOwn(report, propertyName))) {
-          // Send an acknowledgement to the agent.
-          serveObject({
-            message: `Report ${report.id} received and validated`
-          }, response);
-          // Score and save it.
-          await fs.mkdir('reports', {recursive: true});
-          score(scorer, [report]);
-          await fs.writeFile(`reports/${report.id}.json`, `${JSON.stringify(report, null, 2)}\n`);
-          // Digest it and save the digest.
-          const digests = await digest(digester, [[report]]);
-          await fs.writeFile(`reports/${report.id}.html`, digests[0]);
-          // Notify the requester that the digest is ready to retrieve.
-          const jobResponse = jobs.assigned[report.timeStamp].response;
-          const requestParams = {
-            pageURL: report.sources.target.which,
-            pageWhat: report.sources.target.what
-          };
-          const result = `<p><a href="${appURL}/report/${report.id}.html">Digest ${report.id}</a> is complete and ready to retrieve.</p>`;
-          await serveResult(requestParams, result, true, jobResponse);
+        const reportJSON = Buffer.concat(bodyParts).toString();
+        // If the report is JSON:
+        try {
+          requestData.report = JSON.parse(reportJSON);
+          // If it is valid:
+          if (report && reportProperties.every(propertyName => Object.hasOwn(report, propertyName))) {
+            // Send an acknowledgement to the agent.
+            serveObject({
+              message: `Report ${report.id} received and validated`
+            }, response);
+            // Score and save it.
+            await fs.mkdir('reports', {recursive: true});
+            score(scorer, [report]);
+            await fs.writeFile(`reports/${report.id}.json`, `${JSON.stringify(report, null, 2)}\n`);
+            // Digest it and save the digest.
+            const digests = await digest(digester, [[report]]);
+            await fs.writeFile(`reports/${report.id}.html`, digests[0]);
+            // Notify the requester that the digest is ready to retrieve.
+            const jobResponse = jobs.assigned[report.timeStamp].response;
+            const requestParams = {
+              pageURL: report.sources.target.which,
+              pageWhat: report.sources.target.what
+            };
+            const result = `<p><a href="${appURL}/report/${report.id}.html">Digest ${report.id}</a> of Testaro results is complete and ready to retrieve.</p>`;
+            await serveResult(requestParams, result, true, jobResponse);
+          }
+          // Otherwise, i.e. if the report is invalid:
+          else {
+            console.log(`Invalid report:\n${JSON.stringify(report, null, 2)}`);
+            // Report this.
+            console.log(`ERROR: Invalid job report received from agent `);
+            serveObject({
+              message: `Report received, but it was invalid`
+            }, response);
+          }
         }
-        // Otherwise, i.e. if the report is invalid:
-        else {
-          // Report this.
-          console.log(`ERROR: Invalid job report received from agent `);
-          serveObject({
-            message: `Report received, but it was invalid`
-          }, response);
+        // Otherwise, i.e. if the report is not JSON:
+        catch(error) {
+          // Report this to the agent.
+          const message = 'ERROR: Report was not JSON';
+          console.log(message);
+          serveObject({message});
         }
       }
     });
@@ -240,7 +260,7 @@ const requestHandler = async (request, response) => {
   // Otherwise, i.e. if it uses another method:
   else {
     // Report this.
-    console.log(`ERROR: Request with method ${method} received`);
+    console.log(`ERROR: Request with prohibited method ${method} received`);
   }
 };
 // ########## SERVER
