@@ -122,6 +122,7 @@ const requestHandler = async (request, response) => {
       const queryParams = new URLSearchParams(requestQuery);
       const agent = queryParams.get('agent');
       if (['TXRIWin', 'RIWSMac', 'PoolMac'].includes(agent)) {
+        console.log(`Job request received from agent ${agent}`);
         // If there are any jobs to be assigned:
         if (Object.keys(jobs.todo).length) {
           // Choose the first-created job not yet assigned.
@@ -132,8 +133,12 @@ const requestHandler = async (request, response) => {
           // Assign it to the agent.
           const {job} = jobs.todo[firstTimeStamp];
           serveObject(job, response);
-          jobs.assigned[firstTimeStamp] = job;
+          jobs.assigned[firstTimeStamp] = {
+            job,
+            response
+          };
           delete jobs.todo[firstTimeStamp];
+          console.log(`Job ${job.id} assigned to agent ${agent}`);
         }
         // Otherwise, i.e. if there are no jobs to be assigned:
         else {
@@ -171,8 +176,6 @@ const requestHandler = async (request, response) => {
     })
     // When the request has arrived:
     .on('end', async () => {
-      // Initialize the request data.
-      const requestData = {};
       // If the request is from a user for a job to be performed:
       if (requestURL === '/testu') {
         // Get a query string from the request body.
@@ -180,6 +183,7 @@ const requestHandler = async (request, response) => {
         // Parse it as an array of key-value pairs.
         const requestParams = new URLSearchParams(queryString);
         // Convert it to an object with string- or array-valued properties.
+        const requestData = {};
         requestParams.forEach((value, name) => {
           requestData[name] = value;
         });
@@ -214,20 +218,22 @@ const requestHandler = async (request, response) => {
         const reportJSON = Buffer.concat(bodyParts).toString();
         // If the report is JSON:
         try {
-          requestData.report = JSON.parse(reportJSON);
+          const report = JSON.parse(reportJSON);
           // If it is valid:
           if (report && reportProperties.every(propertyName => Object.hasOwn(report, propertyName))) {
             // Send an acknowledgement to the agent.
             serveObject({
               message: `Report ${report.id} received and validated`
             }, response);
+            console.log(`Valid report ${report.id} received from agent ${report.jobData.agent}`);
             // Score and save it.
             await fs.mkdir('reports', {recursive: true});
             score(scorer, [report]);
             await fs.writeFile(`reports/${report.id}.json`, `${JSON.stringify(report, null, 2)}\n`);
             // Digest it and save the digest.
-            const digests = await digest(digester, [[report]]);
-            await fs.writeFile(`reports/${report.id}.html`, digests[0]);
+            const digests = await digest(digester, [report]);
+            const jobDigest = Object.values(digests)[0];
+            await fs.writeFile(`reports/${report.id}.html`, jobDigest);
             // Notify the requester that the digest is ready to retrieve.
             const jobResponse = jobs.assigned[report.timeStamp].response;
             const requestParams = {
@@ -239,7 +245,6 @@ const requestHandler = async (request, response) => {
           }
           // Otherwise, i.e. if the report is invalid:
           else {
-            console.log(`Invalid report:\n${JSON.stringify(report, null, 2)}`);
             // Report this.
             console.log(`ERROR: Invalid job report received from agent `);
             serveObject({
@@ -250,8 +255,8 @@ const requestHandler = async (request, response) => {
         // Otherwise, i.e. if the report is not JSON:
         catch(error) {
           // Report this to the agent.
-          const message = 'ERROR: Report was not JSON';
-          console.log(message);
+          const message = 'ERROR: Report processing failed';
+          console.log(`${message} (${error.message})`);
           serveObject({message});
         }
       }

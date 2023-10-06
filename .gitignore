@@ -8,3 +8,6 @@ node_modules/
 
 # Secrets
 .npmrc
+
+# Transaction records
+reports/
