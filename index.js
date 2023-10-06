@@ -54,7 +54,7 @@ const serveError = async (error, response) => {
   console.log(error.message);
   if (! response.writableEnded) {
     response.statusCode = 400;
-    const errorTemplate = await fs.readFile('error.html');
+    const errorTemplate = await fs.readFile('error.html', 'utf8');
     const errorPage = errorTemplate.replace(/__error__/, error);
     response.end(errorPage);
   }
@@ -152,14 +152,15 @@ const requestHandler = async (request, response) => {
       }
     }
     // Otherwise, if it is for a digest:
-    else if (requestURL.startsWith('/testu/report/') && requestURL.endsWith('.html')) {
-      // Serve the digest.
+    else if (requestURL.startsWith('/testu/reports/') && requestURL.endsWith('.html')) {
+      // Serve the digest if it exists.
       await serveDigest(requestURL.slice(14, -5), response);
     }
     // Otherwise, if it is any other GET request:
     else {
-      // Report this.
+      // Report this to the requester.
       console.log('ERROR: Invalid GET request received');
+      await serveError('ERROR: Invalid request', response);
     }
   }
   // Otherwise, if the request is a POST request:
@@ -202,7 +203,7 @@ const requestHandler = async (request, response) => {
           const resultPage = resultTemplate
           .replace('__pageWhat__', requestData.pageWhat)
           .replace('__pageURL__', requestData.pageURL)
-          .replace(/__digestURL__/g, `${process.env.APP_URL}/report/${job.id}.html`);
+          .replace(/__digestURL__/g, `${process.env.APP_URL}/reports/${job.id}.html`);
           response.setHeader('Content-Location', '/testu/result.html');
           response.end(resultPage);
         }
