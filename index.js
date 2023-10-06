@@ -49,32 +49,14 @@ const reportProperties = [
 
 // ########## FUNCTIONS
 
-// Serves the result page.
-const serveResult = async (requestParams, result, isStart, isEnd, response) => {
-  let resultPage = await fs.readFile('result.html', 'utf8');
-  Object.keys(requestParams).forEach(paramName => {
-    const paramRegExp = new RegExp(`__${paramName}__`, 'g');
-    resultPage = resultPage.replace(paramRegExp, requestParams[paramName]);
-  });
-  resultPage = resultPage.replace('__result__', result);
-  if (isStart) {
-    response.setHeader('Content-Type', 'text/html; charset=utf-8');
-    response.setHeader('Content-Location', 'result.html');
-  }
-  response.write(resultPage);
-  if (isEnd) {
-    response.end();
-  }
-};
 // Serves an error message.
 const serveError = async (error, response) => {
   console.log(error.message);
   if (! response.writableEnded) {
     response.statusCode = 400;
-    await serveResult({
-      pageURL: 'N/A',
-      pageWhat: 'N/A'
-    }, error.message, true, true, response);
+    const errorTemplate = await fs.readFile('error.html');
+    const errorPage = errorTemplate.replace(/__error__/, error);
+    response.end(errorPage);
   }
 };
 // Serves a digest.
@@ -242,12 +224,8 @@ const requestHandler = async (request, response) => {
             await fs.writeFile(`reports/${report.id}.html`, jobDigest);
             // Notify the requester that the digest is ready to retrieve.
             const jobResponse = jobs.assigned[report.id].response;
-            const requestParams = {
-              pageURL: report.sources.target.which,
-              pageWhat: report.sources.target.what
-            };
-            const result = `<p><a href="${process.env.APP_URL}/report/${report.id}.html">Digest ${report.id}</a> of Testaro results is complete and ready to retrieve.</p>`;
-            await serveResult(requestParams, result, false, true, jobResponse);
+            const moreText = `<p><a href="${process.env.APP_URL}/report/${report.id}.html">Digest ${report.id}</a> of Testaro results is complete and ready to retrieve.</p>`;
+            jobResponse.end(moreText);
           }
           // Otherwise, i.e. if the report is invalid:
           else {
