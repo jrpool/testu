@@ -100,9 +100,9 @@ const requestHandler = async (request, response) => {
     }
     // Otherwise, if it is for the request form:
     else if (['/testu', '/testu/index.html'].some(suffix => requestURL.endsWith(suffix))) {
-      // Serve it.
+      // Serve it, leaving the connection open for the result to be added.
       const formPage = await fs.readFile(`index.html`, 'utf8');
-      response.end(formPage);    
+      response.write(formPage);
     }
     // Otherwise, if it is from a testing agent for a job to do:
     else if (requestURL.startsWith('/testu/api/job')) {
