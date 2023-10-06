@@ -244,7 +244,7 @@ const requestHandler = async (request, response) => {
               pageURL: report.sources.target.which,
               pageWhat: report.sources.target.what
             };
-            const result = `<p><a href="${appURL}/report/${report.id}.html">Digest ${report.id}</a> of Testaro results is complete and ready to retrieve.</p>`;
+            const result = `<p><a href="${process.env.APP_URL}/report/${report.id}.html">Digest ${report.id}</a> of Testaro results is complete and ready to retrieve.</p>`;
             await serveResult(requestParams, result, true, jobResponse);
           }
           // Otherwise, i.e. if the report is invalid:
