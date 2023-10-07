@@ -88,7 +88,6 @@ const requestHandler = async (request, response) => {
   // Otherwise, if the request is a GET request:
   else if (method === 'GET') {
     // If it is for the stylesheet:
-    console.log(`requestURL is ${requestURL}`);
     if (requestURL === '/testu/style.css') {
       // Serve it.
       const styleSheet = await fs.readFile('style.css', 'utf8');
@@ -217,7 +216,7 @@ const requestHandler = async (request, response) => {
           const resultPage = resultTemplate
           .replace('__pageWhat__', requestData.pageWhat)
           .replace('__pageURL__', requestData.pageURL)
-          .replace(/__digestURL__/g, `${process.env.APP_URL}/reports/${job.id}.html`);
+          .replace(/__jobID__/g, job.id);
           response.setHeader('Content-Location', '/testu/result.html');
           response.end(resultPage);
         }
