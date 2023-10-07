@@ -28,8 +28,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const source = new EventSource(`/testu/status?jobID=${jobID}`);
   source.addEventListener('message', event => {
     handleMessage(event);
+    if (event.data.includes('digested')) {
+      source.close();
+    }
   });
   source.onerror = error => {
     console.log(`ERROR: Status stream failed (${error.message})`);
+    source.close();
   }
 });

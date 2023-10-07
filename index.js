@@ -135,19 +135,18 @@ const requestHandler = async (request, response) => {
             if (Object.keys(jobs.todo).length) {
               // Choose the first-created job not yet assigned.
               const jobIDs = Object.keys(jobs.todo);
-              console.log(jobIDs);
               const firstJobID = jobIDs.reduce(
                 (first, current) => current < first ? current : first
               );
               console.log(firstJobID);
               // Assign it to the agent.
-              console.log(JSON.stringify(jobs.todo, null, 2));
               const job = jobs.todo[firstJobID];
-              console.log(`About to serve object: ${JSON.stringify(job, null, 2)}`);
               serveObject(job, response);
               jobs.assigned[firstJobID] = job;
               delete jobs.todo[firstJobID];
               console.log(`Job ${firstJobID} assigned to agent ${agent}`);
+              // Notify the requester.
+              resultStreams[firstJobID].write(`data: Job assigned to Testaro agent ${agent}\n\n`);
             }
             // Otherwise, i.e. if there are no jobs to be assigned:
             else {
@@ -181,7 +180,7 @@ const requestHandler = async (request, response) => {
               // Serve the digest if it exists.
               await serveDigest(jobID, response);
             }
-            // Otherwise, if it is for a result stream:
+            // Otherwise, if it is from the result page for a result stream:
             else if (requestPath === '/testu/status') {
               console.log('Result stream requested');
               // Prepare the stream.
@@ -191,11 +190,7 @@ const requestHandler = async (request, response) => {
               // Save the stream for future use.
               resultStreams[jobID] = response;
               // Send an initial message.
-              response.write('data: Testing in progress.\n\n');
-              // Send another message in 2 seconds.
-              setTimeout(() => {
-                response.write('data: Something else happened.\n\n');
-              }, 2000);
+              response.write('data: Job received.\n\n');
             }
             // Otherwise, i.e. if it is an invalid request with a job ID.
             else {
@@ -296,6 +291,8 @@ const requestHandler = async (request, response) => {
             await fs.writeFile(`reports/${report.id}.html`, jobDigest);
             // Notify the requester.
             resultStreams[id].write('data: Report digested.\n\n');
+            // Close the event source for the requester.
+            resultStreams[id].end();
           }
           // Otherwise, i.e. if the report is invalid:
           else {
