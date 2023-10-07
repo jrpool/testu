@@ -63,7 +63,7 @@ const serveError = async (error, response) => {
 const serveDigest = async (id, response) => {
   try {
     const digest = await fs.readFile(`reports/${id}.html`, 'utf8');
-    response.end(digest);    
+    response.end(digest);
   }
   catch(error) {
     await serveError(error, response);
@@ -94,10 +94,15 @@ const requestHandler = async (request, response) => {
       const styleSheet = await fs.readFile('style.css', 'utf8');
       response.end(styleSheet);
     }
-    // Otherwise, if it is for the script:
+    // Otherwise, if it is for a script:
     else if (requestURL === '/testu/script') {
       // Serve it.
       const script = await fs.readFile('script.js', 'utf8');
+      response.end(script);
+    }
+    else if (requestURL === '/testu/result') {
+      // Serve it.
+      const script = await fs.readFile('result.js', 'utf8');
       response.end(script);
     }
     // Otherwise, if it is for the application icon:
@@ -155,6 +160,13 @@ const requestHandler = async (request, response) => {
     else if (requestURL.startsWith('/testu/reports/') && requestURL.endsWith('.html')) {
       // Serve the digest if it exists.
       await serveDigest(requestURL.slice(14, -5), response);
+    }
+    // Otherwise, if it is for the result event stream:
+    else if (requestURL === '/testu/status') {
+      // Prepare the stream.
+      response.setHeader('Content-Type', 'text/event-stream');
+      response.setHeader('Cache-Control', 'no-cache');
+      response.setHeader('Connection', 'keep-alive');
     }
     // Otherwise, if it is any other GET request:
     else {
