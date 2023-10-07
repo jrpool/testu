@@ -24,7 +24,7 @@ const handleMessage = event => {
 document.addEventListener('DOMContentLoaded', () => {
   // Request an event stream and listen for messages on it.
   const source = new EventSource('/testu/status');
-  source.addEventListener(jobID, event => {
+  source.addEventListener('message', event => {
     handleMessage(event);
   });
 });
