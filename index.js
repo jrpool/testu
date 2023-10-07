@@ -120,11 +120,11 @@ const requestHandler = async (request, response) => {
     // Otherwise, i.e. if it is any other GET request:
     else {
       // Get the query paramaters of the request.
-      const requestQuery = requestURL.replace(/^[^?]+/, '');
+      const requestQuery = requestURL.replace(/^[^?]+\??/, '');
       const requestPath = requestURL.replace(/\?.*/, '');
       const queryParams = new URLSearchParams(requestQuery);
-      // If there are any:
-      if (queryParams.size) {
+      // If there are any (size property requires Node v. 19):
+      if (Array.from(queryParams.keys()).length) {
         // If the request is from a testing agent for a job to do:
         if (requestPath === '/testu/api/job') {
           // If the agent is authorized:
@@ -135,16 +135,17 @@ const requestHandler = async (request, response) => {
             if (Object.keys(jobs.todo).length) {
               // Choose the first-created job not yet assigned.
               const jobIDs = Object.keys(jobs.todo);
+              console.log(jobIDs);
               const firstJobID = jobIDs.reduce(
                 (first, current) => current < first ? current : first
               );
+              console.log(firstJobID);
               // Assign it to the agent.
-              const {job} = jobs.todo[firstJobID];
+              console.log(JSON.stringify(jobs.todo, null, 2));
+              const job = jobs.todo[firstJobID];
+              console.log(`About to serve object: ${JSON.stringify(job, null, 2)}`);
               serveObject(job, response);
-              jobs.assigned[firstJobID] = {
-                job,
-                response
-              };
+              jobs.assigned[firstJobID] = job;
               delete jobs.todo[firstJobID];
               console.log(`Job ${firstJobID} assigned to agent ${agent}`);
             }
@@ -182,6 +183,7 @@ const requestHandler = async (request, response) => {
             }
             // Otherwise, if it is for a result stream:
             else if (requestPath === '/testu/status') {
+              console.log('Result stream requested');
               // Prepare the stream.
               response.setHeader('Content-Type', 'text/event-stream');
               response.setHeader('Cache-Control', 'no-cache');
