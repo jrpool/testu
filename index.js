@@ -138,7 +138,6 @@ const requestHandler = async (request, response) => {
               const firstJobID = jobIDs.reduce(
                 (first, current) => current < first ? current : first
               );
-              console.log(firstJobID);
               // Assign it to the agent.
               const job = jobs.todo[firstJobID];
               serveObject(job, response);
@@ -146,7 +145,7 @@ const requestHandler = async (request, response) => {
               delete jobs.todo[firstJobID];
               console.log(`Job ${firstJobID} assigned to agent ${agent}`);
               // Notify the requester.
-              resultStreams[firstJobID].write(`data: Job assigned to Testaro agent ${agent}\n\n`);
+              resultStreams[firstJobID].write(`data: Job assigned to Testaro agent ${agent}.\n\n`);
             }
             // Otherwise, i.e. if there are no jobs to be assigned:
             else {
@@ -290,7 +289,10 @@ const requestHandler = async (request, response) => {
             const jobDigest = Object.values(digests)[0];
             await fs.writeFile(`reports/${report.id}.html`, jobDigest);
             // Notify the requester.
-            resultStreams[id].write('data: Report digested.\n\n');
+            const digestURL = `${process.env.APP_URL}/digest?jobID=${id}`;
+            resultStreams[id].write(
+              `data: Report digested. <a href="${digestURL}">Get the digest</a>.\n\n`
+            );
             // Close the event source for the requester.
             resultStreams[id].end();
           }
