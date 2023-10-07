@@ -14,8 +14,8 @@ const jobID = document.getElementById('jobID').textContent;
 // Handles a message event.
 const handleMessage = event => {
   // If the message is addressed to this session:
-  const {event, data} = event;
-  if (event === jobID && data) {
+  const {data} = event;
+  if (data) {
     // Replace the status content with the received text.
     document.getElementById('status').innerHTML = data;
   }

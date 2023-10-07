@@ -167,6 +167,8 @@ const requestHandler = async (request, response) => {
       response.setHeader('Content-Type', 'text/event-stream');
       response.setHeader('Cache-Control', 'no-cache');
       response.setHeader('Connection', 'keep-alive');
+      // Send an initial message.
+      response.write('data: Testing in progress.');
     }
     // Otherwise, if it is any other GET request:
     else {
