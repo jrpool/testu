@@ -13,18 +13,23 @@ const jobID = document.getElementById('jobID').textContent;
 
 // Handles a message event.
 const handleMessage = event => {
-  // If the message is addressed to this session:
+  // If the message has content:
   const {data} = event;
   if (data) {
-    // Replace the status content with the received text.
-    document.getElementById('status').innerHTML = data;
+    // Add a paragraph with the received text to the result.
+    const newStatusP = document.createElement('p');
+    document.getElementById('status').insertAdjacentElement('beforeend', newStatusP);
+    newStatusP.innerHTML = data;
   }
 };
 // After the DOM has loaded:
 document.addEventListener('DOMContentLoaded', () => {
   // Request an event stream and listen for messages on it.
-  const source = new EventSource('/testu/status');
+  const source = new EventSource(`/testu/status?jobID=${jobID}`);
   source.addEventListener('message', event => {
     handleMessage(event);
   });
+  source.onerror = error => {
+    console.log(`ERROR: Status stream failed (${error.message})`);
+  }
 });

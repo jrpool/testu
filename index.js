@@ -46,6 +46,7 @@ const reportProperties = [
   'timeStamp',
   'jobData'
 ];
+const resultStreams = {};
 
 // ########## FUNCTIONS
 
@@ -116,64 +117,100 @@ const requestHandler = async (request, response) => {
       response.setHeader('Content-Location', '/testu');
       response.end(formPage);
     }
-    // Otherwise, if it is from a testing agent for a job to do:
-    else if (requestURL.startsWith('/testu/api/job')) {
-      // If the agent is authorized:
-      const requestQuery = requestURL.replace(/^[^?]+/, '');
-      const queryParams = new URLSearchParams(requestQuery);
-      const agent = queryParams.get('agent');
-      if (['TXRIWin', 'RIWSMac', 'PoolMac'].includes(agent)) {
-        console.log(`Job request received from agent ${agent}`);
-        // If there are any jobs to be assigned:
-        if (Object.keys(jobs.todo).length) {
-          // Choose the first-created job not yet assigned.
-          const jobIDs = Object.keys(jobs.todo);
-          const firstJobID = jobIDs.reduce(
-            (first, current) => current < first ? current : first
-          );
-          // Assign it to the agent.
-          const {job} = jobs.todo[firstJobID];
-          serveObject(job, response);
-          jobs.assigned[firstJobID] = {
-            job,
-            response
-          };
-          delete jobs.todo[firstJobID];
-          console.log(`Job ${firstJobID} assigned to agent ${agent}`);
-        }
-        // Otherwise, i.e. if there are no jobs to be assigned:
-        else {
-          // Notify the agent.
-          serveObject({
-            message: `No network job at ${protocol}://${request.headers.host} to do`
-          }, response);
-        }
-      }
-      // Otherwise, i.e. if the agent is not authorized:
-      else {
-        // Report this.
-        console.log(`ERROR: Job request made by unauthorized agent ${agent}`);
-      }
-    }
-    // Otherwise, if it is for a digest:
-    else if (requestURL.startsWith('/testu/reports/') && requestURL.endsWith('.html')) {
-      // Serve the digest if it exists.
-      await serveDigest(requestURL.slice(14, -5), response);
-    }
-    // Otherwise, if it is for the result event stream:
-    else if (requestURL === '/testu/status') {
-      // Prepare the stream.
-      response.setHeader('Content-Type', 'text/event-stream');
-      response.setHeader('Cache-Control', 'no-cache');
-      response.setHeader('Connection', 'keep-alive');
-      // Send an initial message.
-      response.write('data: Testing in progress.');
-    }
-    // Otherwise, if it is any other GET request:
+    // Otherwise, i.e. if it is any other GET request:
     else {
-      // Report this to the requester.
-      console.log('ERROR: Invalid GET request received');
-      await serveError('ERROR: Invalid request', response);
+      // Get the query paramaters of the request.
+      const requestQuery = requestURL.replace(/^[^?]+/, '');
+      const requestPath = requestURL.replace(/\?.*/, '');
+      const queryParams = new URLSearchParams(requestQuery);
+      // If there are any:
+      if (queryParams.size) {
+        // If the request is from a testing agent for a job to do:
+        if (requestPath === '/testu/api/job') {
+          // If the agent is authorized:
+          const agent = queryParams.get('agent');
+          if (agent && ['TXRIWin', 'RIWSMac', 'PoolMac'].includes(agent)) {
+            console.log(`Job request received from agent ${agent}`);
+            // If there are any jobs to be assigned:
+            if (Object.keys(jobs.todo).length) {
+              // Choose the first-created job not yet assigned.
+              const jobIDs = Object.keys(jobs.todo);
+              const firstJobID = jobIDs.reduce(
+                (first, current) => current < first ? current : first
+              );
+              // Assign it to the agent.
+              const {job} = jobs.todo[firstJobID];
+              serveObject(job, response);
+              jobs.assigned[firstJobID] = {
+                job,
+                response
+              };
+              delete jobs.todo[firstJobID];
+              console.log(`Job ${firstJobID} assigned to agent ${agent}`);
+            }
+            // Otherwise, i.e. if there are no jobs to be assigned:
+            else {
+              // Notify the agent.
+              serveObject({
+                message: `No network job at ${protocol}://${request.headers.host} to do`
+              }, response);
+            }
+          }
+          // Otherwise, i.e. if the agent is not authorized:
+          else {
+            // Report this.
+            console.log(`ERROR: Job request made by unauthorized agent ${agent}`);
+          }
+        }
+        // Otherwise, i.e. if the request requires a jobID parameter:
+        else {
+          // Get the job ID.
+          const jobID = queryParams.get('jobID');
+          // If none was specified:
+          if (! jobID) {
+            // Report this to the requester.
+            const message = 'ERROR: No job ID specified';
+            console.log(message);
+            await serveError(message, response);
+          }
+          // Otherwise, i.e. if a job ID was specified:
+          else {
+            // If the request is for a digest:
+            if (requestPath === '/testu/digest') {
+              // Serve the digest if it exists.
+              await serveDigest(jobID, response);
+            }
+            // Otherwise, if it is for a result stream:
+            else if (requestPath === '/testu/status') {
+              // Prepare the stream.
+              response.setHeader('Content-Type', 'text/event-stream');
+              response.setHeader('Cache-Control', 'no-cache');
+              response.setHeader('Connection', 'keep-alive');
+              // Save the stream for future use.
+              resultStreams[jobID] = response;
+              // Send an initial message.
+              response.write('data: Testing in progress.\n\n');
+              // Send another message in 2 seconds.
+              setTimeout(() => {
+                response.write('data: Something else happened.\n\n');
+              }, 2000);
+            }
+            // Otherwise, i.e. if it is an invalid request with a job ID.
+            else {
+              // Report this to the requester.
+              const message = 'ERROR: Invalid request with job ID';
+              console.log(message);
+              await serveError(message, response);
+            }
+          }
+        }
+      }
+      // Otherwise, i.e. if no query parameters were specified:
+      else {
+        const message = 'ERROR: No query parameters specified';
+        console.log(message);
+        await serveError(message, response);
+      }
     }
   }
   // Otherwise, if the request is a POST request:
@@ -188,7 +225,7 @@ const requestHandler = async (request, response) => {
     // When the request has arrived:
     .on('end', async () => {
       // If the request is from a user for a job to be performed:
-      if (requestURL === '/testu') {
+      if (requestURL === '/testu/result.html') {
         // Get a query string from the request body.
         const queryString = Buffer.concat(bodyParts).toString();
         // Parse it as an array of key-value pairs.
@@ -232,24 +269,31 @@ const requestHandler = async (request, response) => {
       else if (requestURL === '/testu/api/report') {
         // If the report is valid:
         const reportJSON = Buffer.concat(bodyParts).toString();
-        // If the report is processed:
+        // Process the report.
         try {
-          const report = JSON.parse(reportJSON);
           // If it is valid:
+          const report = JSON.parse(reportJSON);
           if (report && reportProperties.every(propertyName => Object.hasOwn(report, propertyName))) {
             // Send an acknowledgement to the agent.
             serveObject({
               message: `Report ${report.id} received and validated`
             }, response);
             console.log(`Valid report ${report.id} received from agent ${report.jobData.agent}`);
+            // Notify the requester.
+            const {id} = report;
+            resultStreams[id].write('data: Report received from Testaro.\n\n');
             // Score and save it.
             await fs.mkdir('reports', {recursive: true});
             score(scorer, [report]);
             await fs.writeFile(`reports/${report.id}.json`, `${JSON.stringify(report, null, 2)}\n`);
+            // Notify the requester.
+            resultStreams[id].write('data: Report scored.\n\n');
             // Digest it and save the digest.
             const digests = await digest(digester, [report]);
             const jobDigest = Object.values(digests)[0];
             await fs.writeFile(`reports/${report.id}.html`, jobDigest);
+            // Notify the requester.
+            resultStreams[id].write('data: Report digested.\n\n');
           }
           // Otherwise, i.e. if the report is invalid:
           else {
@@ -260,7 +304,7 @@ const requestHandler = async (request, response) => {
             }, response);
           }
         }
-        // Otherwise, i.e. if the report is not processed:
+        // If the processing fails:
         catch(error) {
           // Report this.
           const message = 'ERROR: Report processing failed';
