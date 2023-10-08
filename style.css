@@ -1,156 +1,112 @@
+*:focus {
+  outline: solid 0.2rem #00f;
+  outline-offset: 0.2rem;
+}
 body {
-  margin: 3rem;
-  line-height: 1.5;
-  background-color: #eceef9;
+  margin: 2rem;
+  font-size: large;
+}
+.bold, .componentID {
+  font-weight: 700;
 }
 button {
-  min-width: 24px;
-  min-height: 24px;
-  margin: 0.5rem;
-  font-weight: 700;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.5rem;
   border: solid 0.2rem #03a;
-  border-radius: 0.3rem;
+  border-radius: 1rem;
+  font-size: inherit;
+  font-weight: 700;
   color: #fff;
   background-color: #03a;
 }
-button[disabled] {
-  border-radius: 0;
-  color: #333;
-  background-color: #ccc;
-}
-button:hover:not([disabled]) {
+button:hover {
   color: #000;
-  background-color: #8cf;
+  background-color: #9df;
 }
 caption {
-  margin-bottom: 1rem;
-  text-align: left;
-}
-caption, .major {
-  font-size: 1.2rem;
+  margin: 1rem 0;
   font-weight: 700;
-}
-.center {
-  text-align: center;
+  font-style: italic;
 }
 code {
-  color: #530;
-}
-.compact > div > p {
-  margin: 0 auto;
-}
-.distinct {
-  background-color: #fc0;
-}
-div.violation {
-  margin: 0.5rem;
-  border: solid darkmagenta 3px;
-  padding: 0 0.5rem 0.5rem 0.5rem;
-}
-dt {
-  font-weight: 700;
+  font-family: sans-serif;
+  color: #832703;
 }
 .error {
-  color: #f00;
+  font-weight: 700;
+  color: #c00;
 }
 fieldset {
-  margin-bottom: 1rem;
-  width: fit-content;
+  width: max-content;
+  margin-top: 1rem;
 }
-*:focus {
-  outline: 0.125rem solid #00f;
-  outline-offset: 0.125rem;
+.firstCellRight td:nth-child(1) {
+  text-align: right;
+}
+form {
+  margin-top: 1rem;
+}
+h1, h2, h3, h4, h5, h6 {
+  margin-bottom: 0;
 }
 h2 {
   font-size: 1.8rem;
-  color: darkmagenta;
-}
-h2 + ul, h3 + ul, h4 + ul {
-  margin-top: 0.5rem;
+  margin: 1rem auto 0.5rem auto;
+  color: #006666;
 }
 h3 {
   font-size: 1.6rem;
-  margin-bottom: 0.5rem;
+}
+h3.bars {
+  border-top: solid black 0.1rem;
+  padding-top: 1rem;
 }
 h4 {
   font-size: 1.4rem;
-  color: darkmagenta;
-  margin-bottom: 0.1rem;
 }
 h5 {
   font-size: 1.2rem;
 }
 h6 {
-  margin: 1rem auto;
   font-size: 1rem;
-  color: darkmagenta;
 }
-input:not([type]), input[type=number] {
-  margin-left: 0.5rem;
-}
-input[type=checkbox], input[type=radio] {
-  margin-right: 0.5rem;
-}
-.invisible {
-  display: none;
-}
-.left {
-  text-align: left;
+input {
+  margin: 0.5rem 0;
+  font-size: inherit;
 }
 legend {
-  font-weight: bold;
+  font-weight: 700;
 }
 pre {
-  white-space: pre-wrap;
+  white-space: break-spaces;
 }
-q {
-  quotes: '“' '”';
-}
-#responseError > p {
-  border: 0.2rem solid #f00;
-  padding: 0.5rem;
-  font-weight: 700;
-  color: #f00;
-}
-.right {
+.secondCellRight td:nth-child(2) {
   text-align: right;
 }
-span.tagName {
-  display: inline-block;
-  border: dotted darkmagenta 2px;
-  font-family: monospace;
+section:not(.wide) {
+  max-width: 36rem;
 }
-.status {
-  font-weight: 700;
-}
-.sumTable > tbody > tr > td, tfoot > tr > td {
-  text-align: right;
+#synopsis > p {
+  margin: 0;
+  padding: 0;
 }
 table {
-  margin-top: 1rem;
   border-collapse: collapse;
 }
-table > tbody > tr > th {
-  text-align: left;
+table.allBorder th {
+  padding-bottom: 0;
 }
-table.noBorder, table.noBorder th, table.noBorder td {
-  border: none !important;
-  padding: 0.2rem 0 0.2rem 1rem;
+table.allBorder th, table.allBorder td, tbody td {
+  border: 1px gray solid;
 }
-table.thFlat th {
-  white-space: nowrap;
+tbody th {
+  padding-right: 1rem;
+  text-align: right;
 }
 td, th {
-  padding: 0 0.2rem;
-  border: 0.1rem #555 solid;
+  padding: 0 0.5rem;
 }
-ul.links > li {
-  margin: 0.5rem auto;
-}
-.vertical > label {
-  display: block;
-  margin: 0.25rem auto;
-}
-.wrap {
-  word-break: break-all;
+thead th {
+  padding-bottom: 1rem;
 }

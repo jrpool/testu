@@ -70,6 +70,16 @@ const serveDigest = async (id, response) => {
     await serveError(error, response);
   }
 };
+// Serves a full report.
+const serveReport = async (id, response) => {
+  try {
+    const report = await fs.readFile(`reports/${id}.json`, 'utf8');
+    response.end(report);
+  }
+  catch(error) {
+    await serveError(error, response);
+  }
+};
 // Serves an object as a JSON file.
 const serveObject = (object, response) => {
   response.setHeader('Content-Type', 'application/json; charset=utf-8');
@@ -179,13 +189,18 @@ const requestHandler = async (request, response) => {
               // Serve the digest if it exists.
               await serveDigest(jobID, response);
             }
+            // Otherwise, if it requests a full report:
+            if (requestPath === '/testu/report') {
+              // Serve the report if it exists.
+              await serveReport(jobID, response);
+            }
             // Otherwise, if it reports a granular observable:
             else if (requestPath === '/testu/api/granular') {
               // If it reported a test act:
               if (queryParams.get('act') === 'test') {
                 // Send it as a status update to the requester.
                 const tool = queryParams.get('which');
-                resultStreams[jobID].write('data: Running tests of ${tool}.\n\n');
+                resultStreams[jobID].write(`data: &bull; Running tests of ${tool}.\n\n`);
               }
             }
             // Otherwise, if the result page requests a result stream:
@@ -306,6 +321,7 @@ const requestHandler = async (request, response) => {
             );
             // Close the event source for the requester.
             resultStreams[id].end();
+            console.log(`Job ${report.id} complete\n`);
           }
           // Otherwise, i.e. if the report is invalid:
           else {

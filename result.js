@@ -20,6 +20,8 @@ const handleMessage = event => {
     const newStatusP = document.createElement('p');
     document.getElementById('status').insertAdjacentElement('beforeend', newStatusP);
     newStatusP.innerHTML = data;
+    // Scroll to make the added paragraph visible.
+    newStatusP.scrollIntoView({behavior: 'smooth'});
   }
 };
 // After the DOM has loaded:

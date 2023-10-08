@@ -11,7 +11,7 @@
     },
     {
       "type": "test",
-      "which": "alfa"
+      "which": "aslint"
     }
   ]
 }
