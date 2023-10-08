@@ -3,8 +3,8 @@
 # Dependency directories
 node_modules/
 
-# dotenv environment variable files
-.env#
+# dotenv environment variable file
+.env
 
 # Secrets
 .npmrc
