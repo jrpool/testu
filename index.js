@@ -174,12 +174,21 @@ const requestHandler = async (request, response) => {
           }
           // Otherwise, i.e. if a job ID was specified:
           else {
-            // If the request is for a digest:
+            // If it requests a digest:
             if (requestPath === '/testu/digest') {
               // Serve the digest if it exists.
               await serveDigest(jobID, response);
             }
-            // Otherwise, if it is from the result page for a result stream:
+            // Otherwise, if it reports a granular observable:
+            else if (requestPath === '/testu/api/granular') {
+              // If it reported a test act:
+              if (queryParams.get('act') === 'test') {
+                // Send it as a status update to the requester.
+                const tool = queryParams.get('which');
+                resultStreams[jobID].write('data: Running tests of ${tool}.\n\n');
+              }
+            }
+            // Otherwise, if the result page requests a result stream:
             else if (requestPath === '/testu/status') {
               console.log('Result stream requested');
               // Prepare the stream.
@@ -242,6 +251,8 @@ const requestHandler = async (request, response) => {
             'testuList', '1 target', [['target', requestData.pageWhat, requestData.pageURL]]
           );
           const job = merge(script, jobBatch, null, true)[0];
+          // Specify granular watching.
+          job.observe = true;
           // Add it to the jobs to be done.
           jobs.todo[job.id] = job;
           // Serve a result page to the requester.
