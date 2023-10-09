@@ -13,7 +13,8 @@
       "type": "test",
       "which": "testaro",
       "withItems": true,
-      "stopOnFail": false
+      "stopOnFail": false,
+      "rules": ["y", "bulk", "allSlanted"]
     }
   ]
 }

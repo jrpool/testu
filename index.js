@@ -198,9 +198,18 @@ const requestHandler = async (request, response) => {
             else if (requestPath === '/testu/api/granular') {
               // If it reported a test act:
               if (queryParams.get('act') === 'test') {
+                // Get the message to send.
+                let message = '';
+                const testaroRule = queryParams.get('rule');
+                if (testaroRule) {
+                  message = `&nbsp;&mdash; Rule ${testaroRule} (${queryParams.get('ruleWhat')}).`;
+                }
+                else {
+                  const tool = queryParams.get('which');
+                  message = `&bull; Running tests of ${tool}.`;
+                }
                 // Send it as a status update to the requester.
-                const tool = queryParams.get('which');
-                resultStreams[jobID].write(`data: &bull; Running tests of ${tool}.\n\n`);
+                resultStreams[jobID].write(`data: ${message}\n\n`);
               }
             }
             // Otherwise, if the result page requests a result stream:
