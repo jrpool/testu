@@ -2,7 +2,7 @@
   "id": "ts36a",
   "what": "comprehensive accessibility tests with webkit and redirection permitted",
   "strict": false,
-  "timeLimit": 330,
+  "timeLimit": 600,
   "acts": [
     {
       "type": "placeholder",
@@ -11,7 +11,10 @@
     },
     {
       "type": "test",
-      "which": "aslint"
+      "which": "testaro",
+      "withItems": true,
+      "stopOnFail": false,
+      "rules": ["y", "pseudoP"]
     }
   ]
 }
