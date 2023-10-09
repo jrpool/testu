@@ -13,8 +13,7 @@
       "type": "test",
       "which": "testaro",
       "withItems": true,
-      "stopOnFail": false,
-      "rules": ["y", "pseudoP"]
+      "stopOnFail": false
     }
   ]
 }
