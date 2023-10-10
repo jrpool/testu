@@ -274,9 +274,7 @@ const requestHandler = async (request, response) => {
           const jobBatch = batch(
             'testuList', '1 target', [['target', requestData.pageWhat, requestData.pageURL]]
           );
-          const job = merge(script, jobBatch, 'demo@assets23.org', true)[0];
-          // Specify granular watching.
-          job.observe = true;
+          const job = merge(script, jobBatch, 'demo@assets23.org', 'only', true, true)[0];
           // Add it to the jobs to be done.
           jobs.todo[job.id] = job;
           // Serve a result page to the requester.
