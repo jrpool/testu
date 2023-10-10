@@ -9,8 +9,5 @@ node_modules/
 # Secrets
 .npmrc
 
-# Transaction records
-reports/
-
 # Operating-system files
 .DS_Store
