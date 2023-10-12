@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Testilo">
+    <meta name="creator" content="Testilo">
+    <meta name="publisher" name="Testilo">
+    <meta name="description" content="report of accessibility testing of a web page">
+    <meta name="keywords" content="accessibility a11y web testing">
+    <title>Accessibility digest</title>
+    <link rel="icon" href="favicon.png">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Accessibility digest</h1>
+        <table class="allBorder">
+          <caption>Synopsis</caption>
+          <tr><th>Page</th><td>Gallaudet</td></tr>
+          <tr><th>URL</th><td>https://gallaudet.edu</td></tr>
+          <tr><th>Requester</th><td>demo@assets.conf</td></tr>
+          <tr><th>Test date</th><td>2023/10/09</td></tr>
+          <tr><th>Score</th><td>11</td></tr>
+          <tr><th>Tested by</th><td>Testaro, procedure <code>ts36a</code></td></tr>
+          <tr><th>Scored by</th><td>Testilo, procedure <code>tsp36</code></td></tr>
+          <tr><th>Digested by</th><td>Testilo, procedure <code>tdp36</code></td></tr>
+          <tr><th>Full report</th><td><a href="report?jobID=231009T030114-ts36a-target"><code>report?jobID=231009T030114-ts36a-target</code></a></td></tr>
+        </table>
+      </header>
+      <h2>Introduction</h2>
+      <p>How <a href="https://www.w3.org/WAI/">accessible</a> is the Gallaudet web page at <a href="https://gallaudet.edu"><code>https://gallaudet.edu</code></a>?</p>
+      <p>This digest can help answer that question. Nine different tools (Alfa, ASLint, Axe, Equal Access, HTML CodeSniffer, Nu Html Checker, QualWeb, Testaro, and WAVE) tested the page to check its compliance with their accessibility rules. In all, the tools define about 960 rules, which are classified here into about 290 accessibility issues. The results were interpreted to yield a score. If the page passed every test, its score would be 0. The score for this page was 11.</p>
+      <h2>Total score</h2>
+      <p>The total score is the sum of five components.</p>
+      <table class="allBorder secondCellRight">
+        <caption>Score summary</caption>
+        <thead>
+          <tr><th>Component</th><th>Score</th><th>Description</th></tr>
+        </thead>
+        <tbody class="headersLeft">
+          <tr><th>issue</th><td>9</td><td>Severity and number of reported defects</td></tr>
+          <tr><th>tool</th><td>1</td><td>Tool-by-tool defect ratings</td></tr>
+          <tr><th>prevention</th><td>0</td><td>Failed attempts by tools to test the page</td></tr>
+          <tr><th>log</th><td>1</td><td>Browser warnings about the page</td></tr>
+          <tr><th>latency</th><td>0</td><td>Abnormal delay in page responses</td></tr>
+        </tbody>
+        <tfoot>
+          <tr><th>total</th><td>11</td><td>Sum of the component scores</td></tr>
+        </tfoot>
+      </table>
+      <h2>Issue scores</h2>
+      <p>The score on an issue depends on the <dfn>severity</dfn> (user impact and certainty) of the issue and on how many instances were reported (by one or more tools).</p>
+      <table class="allBorder secondCellRight">
+        <caption>Issue scores</caption>
+        <thead>
+          <tr><th>Issue</th><th>Score</th></tr>
+        </thead>
+        <tbody class="headersLeft">
+          <tr><th>pseudoParagraphRisk</th><td>9</td></tr>
+        </tbody>
+      </table>
+      <h2>Itemized issues</h2>
+      <p>The reported rule violations are itemized below, issue by issue. Additional details can be inspected in the <a href="report?jobID=231009T030114-ts36a-target">full report</a>.</p>
+      <h3 class="bars">Issue <code>pseudoParagraphRisk</code></h3>
+        <p>Impact: User may be unable to get help to fully understand the text</p>
+        <p>WCAG: 1.3.1</p>
+        <p>Score: 9</p>
+        <h4>Violations of <code>testaro</code> rules</h5>
+        <h5>Rule <code>pseudoP</code></h5>
+        <p>Description: Element contains sequential br elements instead of p</p>
+        <p>Count of instances: 9</p>
+      <footer>
+        <p class="date">Produced <time itemprop="datePublished" datetime="2023-10-09">2023/10/09</time></p>
+      </footer>
+    </main>
+  </body>
+</html>
