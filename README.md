@@ -5,7 +5,7 @@ Ask Testaro to test a web page for accessibility
 
 ## Deployment
 
-Instructions for deploying Testu on an AWS EC2 server with an Ubuntu image, based largely on [Digital Ocean documentation](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-20-04).
+Instructions for deploying Testu on an AWS EC2 server with an Ubuntu image, derived in part from [Digital Ocean documentation on Node](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-20-04), [on Nginx](https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-20-04), and [on Certbot](https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-20-04).
 
 - Create an instance on AWS with Ubuntu OS, t2-micro type, 30GiB SSD storage.
 - Connect to it in the AWS Console.
