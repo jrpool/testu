@@ -61,8 +61,15 @@ Instructions for deploying Testu on an Amazon Web Services (AWS) EC2 server with
 1. Check the automatic certificate renewal process (`sudo systemctl status certbot.timer`).
 1. Test that process (`sudo certbot renew --dry-run`).
 1. With `/var/www` as the working directory, clone `testu` (`sudo git clone https://github.com/jrpool/testu.git`).
-1. Change the group of the `testu` directory to `ubuntu`.
+1. Change the owner and group of the `testu` directory to `ubuntu`.
 1. Change the group permission on the `testu` directory to add writing.
+1. Make `git` accept `ubuntu` as the owner of the `testu` directory (`git config --global --add safe.directory /var/www/testu`).
+1. Add an `.env` file to the `/var/www/testu` directory, containing these environment variables:
+    ```bash
+    APP_URL=https://testaro.tools/testu
+    PROTOCOL=http
+    REQUESTER=demo@testaro.tools
+    ```
 1. Create an `.npmrc` file in `/home/ubuntu` with:
     - `//registry.npmjs.org/:_username=…`
     - //`registry.npmjs.org/:_authToken=npm_…`
@@ -84,7 +91,7 @@ Instructions for deploying Testu on an Amazon Web Services (AWS) EC2 server with
     }
     ```
 
-1. Reload Nginx to use this configuration (`sudo systemctl reload nginx`);
+1. Reload Nginx to use this configuration (`sudo systemctl reload nginx`).
 1. Test Nginx as a reverse proxy and Testu by navigating to:
 - `https://testaro.tools`
 - `http://testaro.tools`
