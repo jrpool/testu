@@ -1,13 +1,14 @@
-# Logs
-
 # Dependency directories
 node_modules/
 
-# dotenv environment variable file
+# Environment variable file
 .env
 
 # Secrets
 .npmrc
+
+# Transaction files
+reports/
 
 # Operating-system files
 .DS_Store
