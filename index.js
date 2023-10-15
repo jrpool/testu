@@ -122,7 +122,7 @@ const requestHandler = async (request, response) => {
     }
     // Otherwise, if it is for the request form:
     else if (['/testu', '/testu/index.html'].includes(requestURL)) {
-      // Serve it, leaving the connection open for the result to be added.
+      // Serve it.
       const formPage = await fs.readFile(`index.html`, 'utf8');
       response.setHeader('Content-Location', '/testu');
       response.end(formPage);
@@ -236,9 +236,17 @@ const requestHandler = async (request, response) => {
       }
       // Otherwise, i.e. if no query parameters were specified:
       else {
-        const message = 'ERROR: No query parameters specified';
-        console.log(message);
-        await serveError(message, response);
+        const error = {
+          message: 'ERROR: No query parameters specified'
+        };
+        // Report the error.
+        console.log(error.message);
+        if (requestPath.includes('/api/')){
+          serveObject(error, response);
+        }
+        else {
+          await serveError(error, response);
+        }
       }
     }
   }
