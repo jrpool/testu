@@ -80,7 +80,7 @@ const serveReport = async (id, response) => {
     await serveError(error, response);
   }
 };
-// Serves an object as a JSON file.
+// Serves an object in JSON format.
 const serveObject = (object, response) => {
   response.setHeader('Content-Type', 'application/json; charset=utf-8');
   response.end(JSON.stringify(object));
