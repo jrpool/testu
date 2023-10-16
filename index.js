@@ -160,9 +160,7 @@ const requestHandler = async (request, response) => {
             // Otherwise, i.e. if there are no jobs to be assigned:
             else {
               // Notify the agent.
-              serveObject({
-                message: `No network job at ${protocol}://${request.headers.host} to do`
-              }, response);
+              serveObject({}, response);
             }
           }
           // Otherwise, i.e. if the agent is not authorized:
