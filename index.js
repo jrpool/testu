@@ -303,9 +303,8 @@ const requestHandler = async (request, response) => {
       }
       // Otherwise, if the request is a job report from a testing agent:
       else if (requestURL === '/testu/api/report') {
-        // If the report is valid:
-        const reportJSON = Buffer.concat(bodyParts).toString();
         // Process the report.
+        const reportJSON = Buffer.concat(bodyParts).toString();
         try {
           // If it is valid:
           const report = JSON.parse(reportJSON);
@@ -314,7 +313,7 @@ const requestHandler = async (request, response) => {
             serveObject({
               message: `Report ${report.id} received and validated`
             }, response);
-            console.log(`Valid report ${report.id} received from agent ${report.jobData.agent}`);
+            console.log(`Valid report ${report.id} received from agent ${report.sources.agent}`);
             // Notify the requester.
             const {id} = report;
             resultStreams[id].write('data: Report received from Testaro.\n\n');
@@ -340,10 +339,9 @@ const requestHandler = async (request, response) => {
           // Otherwise, i.e. if the report is invalid:
           else {
             // Report this.
-            console.log(`ERROR: Invalid job report received from agent `);
-            serveObject({
-              message: `Report received, but it was invalid`
-            }, response);
+            const message = 'ERROR: Invalid job report received';
+            console.log(message);
+            serveObject({message}, response);
           }
         }
         // If the processing fails:
