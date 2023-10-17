@@ -1,5 +1,5 @@
 {
-  "id": "ts36a",
+  "id": "ts37a",
   "what": "comprehensive accessibility tests with webkit and redirection permitted",
   "strict": false,
   "timeLimit": 600,
@@ -11,11 +11,13 @@
     },
     {
       "type": "test",
-      "which": "alfa"
+      "which": "axe",
+      "detailLevel": 2
     },
     {
       "type": "test",
-      "which": "aslint"
+      "which": "qualWeb",
+      "withNewContent": false
     },
     {
       "type": "test",
