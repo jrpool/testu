@@ -319,18 +319,17 @@ const requestHandler = async (request, response) => {
             }, response);
             console.log(`Valid report ${id} received from agent ${agent}`);
             // Notify the requester.
-            const {id} = report;
             resultStreams[id].write(`data: Report ${id} received from Testaro agent ${agent}.\n\n`);
             // Score and save it.
             await fs.mkdir('reports', {recursive: true});
             score(scorer, [report]);
-            await fs.writeFile(`reports/${report.id}.json`, `${JSON.stringify(report, null, 2)}\n`);
+            await fs.writeFile(`reports/${id}.json`, `${JSON.stringify(report, null, 2)}\n`);
             // Notify the requester.
             resultStreams[id].write('data: Report scored.\n\n');
             // Digest it and save the digest.
             const digests = await digest(digester, [report]);
             const jobDigest = Object.values(digests)[0];
-            await fs.writeFile(`reports/${report.id}.html`, jobDigest);
+            await fs.writeFile(`reports/${id}.html`, jobDigest);
             // Notify the requester.
             const digestURL = `${process.env.APP_URL}/digest?jobID=${id}`;
             resultStreams[id].write(
