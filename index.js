@@ -212,7 +212,7 @@ const requestHandler = async (request, response) => {
             }
             // Otherwise, if the result page requests a result stream:
             else if (requestPath === '/testu/status') {
-              console.log('Result stream requested');
+              console.log('Result stream requested by user agent result page');
               // Prepare the stream.
               response.setHeader('Content-Type', 'text/event-stream');
               response.setHeader('Cache-Control', 'no-cache');
@@ -276,6 +276,7 @@ const requestHandler = async (request, response) => {
           && requestData.pageURL.startsWith('http')
           && requestData.pageWhat
         ){
+          console.log(`Job submitted to test ${pageWhat} (${requestData.pageURL})`);
           // Convert it to a Testaro job.
           const jobBatch = batch(
             'testuList', '1 target', [['target', requestData.pageWhat, requestData.pageURL]]
@@ -292,6 +293,7 @@ const requestHandler = async (request, response) => {
           .replace(/__jobID__/g, job.id);
           response.setHeader('Content-Location', '/testu/result.html');
           response.end(resultPage);
+          console.log(`Result page initialized and served`);
         }
         // Otherwise, i.e. if the request is invalid:
         else {
