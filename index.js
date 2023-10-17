@@ -276,7 +276,7 @@ const requestHandler = async (request, response) => {
           && requestData.pageURL.startsWith('http')
           && requestData.pageWhat
         ){
-          console.log(`Job submitted to test ${pageWhat} (${requestData.pageURL})`);
+          console.log(`Job submitted to test ${requestData.pageWhat} (${requestData.pageURL})`);
           // Convert it to a Testaro job.
           const jobBatch = batch(
             'testuList', '1 target', [['target', requestData.pageWhat, requestData.pageURL]]
