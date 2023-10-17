@@ -21,12 +21,12 @@ process.env.APP_URL ??= 'http://localhost:3008/testu';
 process.env.REPORT_URL = `${process.env.APP_URL}/api/report`;
 // Functions from Testilo.
 const {merge} = require('testilo/merge');
-const {scorer} = require('testilo/procs/score/tsp36');
+const {scorer} = require('testilo/procs/score/tsp37');
 const {score} = require('testilo/score');
 const {digest} = require('testilo/digest');
-const {digester} = require('testilo/procs/digest/tdp36/index');
+const {digester} = require('testilo/procs/digest/tdp37/index');
 // Script object.
-const script = require('./scripts/ts36a.json');
+const script = require('./scripts/ts37a.json');
 
 // ########## CONSTANTS
 

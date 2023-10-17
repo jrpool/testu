@@ -110,3 +110,6 @@ td, th {
 thead th {
   padding-bottom: 1rem;
 }
+.thirdCellRight td:nth-child(3) {
+  text-align: right;
+}
