@@ -310,15 +310,17 @@ const requestHandler = async (request, response) => {
         try {
           // If it is valid:
           const report = JSON.parse(reportJSON);
+          const {id, sources} = report;
+          const {agent} = sources;
           if (report && reportProperties.every(propertyName => Object.hasOwn(report, propertyName))) {
             // Send an acknowledgement to the agent.
             serveObject({
-              message: `Report ${report.id} received and validated`
+              message: `Report ${id} received and validated`
             }, response);
-            console.log(`Valid report ${report.id} received from agent ${report.sources.agent}`);
+            console.log(`Valid report ${id} received from agent ${agent}`);
             // Notify the requester.
             const {id} = report;
-            resultStreams[id].write('data: Report received from Testaro.\n\n');
+            resultStreams[id].write(`data: Report ${id} received from Testaro agent ${agent}.\n\n`);
             // Score and save it.
             await fs.mkdir('reports', {recursive: true});
             score(scorer, [report]);
@@ -326,12 +328,9 @@ const requestHandler = async (request, response) => {
             // Notify the requester.
             resultStreams[id].write('data: Report scored.\n\n');
             // Digest it and save the digest.
-            console.log('About to digest');
             const digests = await digest(digester, [report]);
-            console.log('Digested');
             const jobDigest = Object.values(digests)[0];
             await fs.writeFile(`reports/${report.id}.html`, jobDigest);
-            console.log('Digest saved');
             // Notify the requester.
             const digestURL = `${process.env.APP_URL}/digest?jobID=${id}`;
             resultStreams[id].write(
@@ -339,7 +338,7 @@ const requestHandler = async (request, response) => {
             );
             // Close the event source for the requester.
             resultStreams[id].end();
-            console.log(`Job ${report.id} complete\n`);
+            console.log(`Requester notified that job ${id} is complete\n`);
           }
           // Otherwise, i.e. if the report is invalid:
           else {

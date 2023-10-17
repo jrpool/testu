@@ -11,15 +11,46 @@
     },
     {
       "type": "test",
+      "which": "alfa"
+    },
+    {
+      "type": "test",
+      "which": "aslint"
+    },
+    {
+      "type": "test",
       "which": "axe",
       "detailLevel": 2
     },
     {
       "type": "test",
+      "which": "htmlcs"
+    },
+    {
+      "type": "test",
+      "which": "ibm",
+      "withItems": true,
+      "withNewContent": false
+    },
+    {
+      "type": "test",
+      "which": "nuVal"
+    },
+    {
+      "type": "test",
+      "which": "qualWeb",
+      "withNewContent": false
+    },
+    {
+      "type": "test",
       "which": "testaro",
       "withItems": true,
-      "stopOnFail": false,
-      "rules": ["y", "bulk", "radioSet", "role"]
+      "stopOnFail": false
+    },
+    {
+      "type": "test",
+      "which": "wave",
+      "reportType": 4
     }
   ]
 }
