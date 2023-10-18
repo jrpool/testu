@@ -188,7 +188,7 @@ const requestHandler = async (request, response) => {
               await serveDigest(jobID, response);
             }
             // Otherwise, if it requests a full report:
-            if (requestPath === '/testu/report') {
+            else if (requestPath === '/testu/report') {
               // Serve the report if it exists.
               await serveReport(jobID, response);
             }
