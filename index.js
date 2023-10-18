@@ -139,7 +139,7 @@ const requestHandler = async (request, response) => {
         if (requestPath === '/testu/api/job') {
           // If the agent is authorized:
           const agent = queryParams.get('agent');
-          if (agent && ['TXRIWin', 'RIWSMac', 'PoolMac', 'PoolHome'].includes(agent)) {
+          if (agent && ['TXRIWin', 'RIWSMac', 'PoolMac', 'PoolHome', 'PoolWin'].includes(agent)) {
             console.log(`Job request received from agent ${agent}`);
             // If there are any jobs to be assigned:
             if (Object.keys(jobs.todo).length) {
