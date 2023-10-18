@@ -116,7 +116,7 @@ const requestHandler = async (request, response) => {
       response.end(script);
     }
     // Otherwise, if it is for the application icon:
-    else if (requestURL === '/favicon.ico') {
+    else if (requestURL === '/testu/favicon.ico') {
       // Serve nothing.
       response.end('');
     }
