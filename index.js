@@ -185,11 +185,13 @@ const requestHandler = async (request, response) => {
             // If it requests a digest:
             if (requestPath === '/testu/digest') {
               // Serve the digest if it exists.
+              console.log(`Digest ${jobID} requested`);
               await serveDigest(jobID, response);
             }
             // Otherwise, if it requests a full report:
             else if (requestPath === '/testu/report') {
               // Serve the report if it exists.
+              console.log(`Full report ${jobID} requested`);
               await serveReport(jobID, response);
             }
             // Otherwise, if it reports a granular observable:
@@ -235,7 +237,7 @@ const requestHandler = async (request, response) => {
       // Otherwise, i.e. if no query parameters were specified:
       else {
         const error = {
-          message: 'ERROR: No query parameters specified'
+          message: `ERROR: No query parameters in request (${requestPath})`
         };
         // Report the error.
         console.log(error.message);
