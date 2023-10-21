@@ -25,8 +25,6 @@ const {scorer} = require('testilo/procs/score/tsp37');
 const {score} = require('testilo/score');
 const {digest} = require('testilo/digest');
 const {digester} = require('testilo/procs/digest/tdp37/index');
-// Script object.
-const script = require('./scripts/ts37a.json');
 
 // ########## CONSTANTS
 
@@ -105,7 +103,7 @@ const requestHandler = async (request, response) => {
       const styleSheet = await fs.readFile('style.css', 'utf8');
       response.end(styleSheet);
     }
-    // Otherwise, if it is for a script:
+    // Otherwise, if it is for a page script:
     else if (requestURL === '/testu/script') {
       // Serve it.
       const script = await fs.readFile('script.js', 'utf8');
@@ -285,18 +283,25 @@ const requestHandler = async (request, response) => {
             'testuList', '1 target', [['target', requestData.pageWhat, requestData.pageURL]]
           );
           // Specify test isolation, standardized-only reporting, and granular reporting.
-          const job = merge(script, jobBatch, 'demo@assets23.org', true, 'only', true)[0];
-          // Add it to the jobs to be done.
-          jobs.todo[job.id] = job;
-          // Serve a result page to the requester.
-          const resultTemplate = await fs.readFile('result.html', 'utf8');
-          const resultPage = resultTemplate
-          .replace('__pageWhat__', requestData.pageWhat)
-          .replace('__pageURL__', requestData.pageURL)
-          .replace(/__jobID__/g, job.id);
-          response.setHeader('Content-Location', '/testu/result.html');
-          response.end(resultPage);
-          console.log(`Result page initialized and served`);
+          const scriptID = process.env.SCRIPT || '';
+          try{
+            const script = scriptID ? require(`./scripts/${scriptID}.json`): null;
+            const job = merge(script, jobBatch, 'demo@assets23.org', true, 'only', true)[0];
+            // Add it to the jobs to be done.
+            jobs.todo[job.id] = job;
+            // Serve a result page to the requester.
+            const resultTemplate = await fs.readFile('result.html', 'utf8');
+            const resultPage = resultTemplate
+            .replace('__pageWhat__', requestData.pageWhat)
+            .replace('__pageURL__', requestData.pageURL)
+            .replace(/__jobID__/g, job.id);
+            response.setHeader('Content-Location', '/testu/result.html');
+            response.end(resultPage);
+            console.log(`Result page initialized and served`);
+          }
+          catch(error) {
+            await serveError(`ERROR identifying script (${error.message})`, response);
+          }
         }
         // Otherwise, i.e. if the request is invalid:
         else {
