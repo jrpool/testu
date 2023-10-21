@@ -1,6 +1,6 @@
 {
   "id": "ts37a",
-  "what": "accessibility tests except WAVE with webkit and redirection permitted",
+  "what": "comprehensive accessibility tests with webkit and redirection permitted",
   "strict": false,
   "timeLimit": 600,
   "acts": [
@@ -46,6 +46,11 @@
       "which": "testaro",
       "withItems": true,
       "stopOnFail": false
+    },
+    {
+      "type": "test",
+      "which": "wave",
+      "reportType": 4
     }
   ]
 }
