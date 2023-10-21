@@ -31,6 +31,7 @@ const script = require('./scripts/ts37a.json');
 // ########## CONSTANTS
 
 const protocol = process.env.PROTOCOL || 'http';
+const agents = process.env.AGENTS && process.env.AGENTS.split('+') || [];
 const jobs = {
   todo: {},
   assigned: {}
@@ -139,7 +140,7 @@ const requestHandler = async (request, response) => {
         if (requestPath === '/testu/api/job') {
           // If the agent is authorized:
           const agent = queryParams.get('agent');
-          if (agent && ['TXRIWin', 'RIWSMac', 'PoolMac', 'PoolHome', 'PoolWin'].includes(agent)) {
+          if (agent && agents.includes(agent)) {
             console.log(`Job request received from agent ${agent}`);
             // If there are any jobs to be assigned:
             if (Object.keys(jobs.todo).length) {
@@ -166,7 +167,7 @@ const requestHandler = async (request, response) => {
           // Otherwise, i.e. if the agent is not authorized:
           else {
             // Report this.
-            console.log(`ERROR: Job request made by unauthorized agent ${agent}`);
+            console.log(`ERROR: Job request made by unauthorized agent ${agent || 'MISSING'}`);
           }
         }
         // Otherwise, i.e. if the request requires a jobID parameter:
