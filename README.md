@@ -83,12 +83,13 @@ Testu was deployed on an Amazon Web Services (AWS) EC2 server with an Ubuntu ima
 1. With `/var/www` as the working directory, clone `testu` (`sudo git clone https://github.com/jrpool/testu.git`).
 1. Change the owner and group of the `testu` directory and all subdirectories and files in it to `ubuntu` (`sudo chown -R ubuntu:ubuntu /var/www/testu`).
 1. Make `git` accept `ubuntu` as the owner of the `testu` directory (`git config --global --add safe.directory /var/www/testu`).
-1. Add an `.env` file to the `/var/www/testu` directory, containing these environment variables (replacing `ts…` with a script ID, such as `ts99`):
+1. Add an `.env` file to the `/var/www/testu` directory, containing these environment variables (replacing `abc+xyz` with a `+`-delimited list of authorized testing agent IDs and replacing `ts…` with a script ID such as `ts99`):
 
     ```bash
     APP_URL=https://testaro.tools/testu
     PROTOCOL=http
     REQUESTER=demo@testaro.tools
+    AGENTS=abc+xyz
     SCRIPT=ts…
     REJECT_UNAUTHORIZED=true
     ```
