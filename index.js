@@ -115,8 +115,12 @@ const requestHandler = async (request, response) => {
       response.end(script);
     }
     // Otherwise, if it is for the application icon:
-    else if (requestURL.startsWith('/testu/favicon.')) {
-      // Serve nothing.
+    else if (requestURL.includes('favicon.')) {
+      // Cen the site icon.
+      const icon = await fs.readFile('favicon.ico');
+      // Serve it.
+      response.setHeader('Content-Type', 'image/x-icon');
+      response.write(icon, 'binary');
       response.end('');
     }
     // Otherwise, if it is for the request form:
@@ -201,11 +205,11 @@ const requestHandler = async (request, response) => {
                 let message = '';
                 const testaroRule = queryParams.get('rule');
                 if (testaroRule) {
-                  message = `&nbsp;&mdash; Rule ${testaroRule} (${queryParams.get('ruleWhat')}).`;
+                  message = `&nbsp;&mdash; Rule <code>${testaroRule}</code> (${queryParams.get('ruleWhat')}).`;
                 }
                 else {
                   const tool = queryParams.get('which');
-                  message = `&bull; Running tests of ${tool}.`;
+                  message = `&bull; Running tests of <code>${tool}</code>.`;
                 }
                 // Send it as a status update to the requester.
                 resultStreams[jobID].write(`data: ${message}\n\n`);

@@ -1,0 +1,17 @@
+{
+  "id": "ts37amost",
+  "what": "accessibility tests except WAVE with webkit and redirection permitted",
+  "strict": false,
+  "timeLimit": 600,
+  "acts": [
+    {
+      "type": "placeholder",
+      "which": "main",
+      "launch": "webkit"
+    },
+    {
+      "type": "test",
+      "which": "aslint"
+    }
+  ]
+}
