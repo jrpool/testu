@@ -222,7 +222,7 @@ const requestHandler = async (request, response) => {
               // Save the stream for future use.
               resultStreams[jobID] = response;
               // Send an initial message.
-              response.write('data: Job received.\n\n');
+              response.write('data: Job received. <strong>Wait for results below!</strong>\n\n');
             }
             // Otherwise, i.e. if it is an invalid request with a job ID.
             else {
