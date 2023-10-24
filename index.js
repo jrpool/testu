@@ -25,12 +25,11 @@ const {scorer} = require('testilo/procs/score/tsp37');
 const {score} = require('testilo/score');
 const {digest} = require('testilo/digest');
 const {digester} = require('testilo/procs/digest/tdp37/index');
-// Script object.
-const script = require('./scripts/ts37a.json');
 
 // ########## CONSTANTS
 
 const protocol = process.env.PROTOCOL || 'http';
+const agents = process.env.AGENTS && process.env.AGENTS.split('+') || [];
 const jobs = {
   todo: {},
   assigned: {}
@@ -104,7 +103,7 @@ const requestHandler = async (request, response) => {
       const styleSheet = await fs.readFile('style.css', 'utf8');
       response.end(styleSheet);
     }
-    // Otherwise, if it is for a script:
+    // Otherwise, if it is for a page script:
     else if (requestURL === '/testu/script') {
       // Serve it.
       const script = await fs.readFile('script.js', 'utf8');
@@ -116,8 +115,12 @@ const requestHandler = async (request, response) => {
       response.end(script);
     }
     // Otherwise, if it is for the application icon:
-    else if (requestURL.startsWith('/testu/favicon.')) {
-      // Serve nothing.
+    else if (requestURL.includes('favicon.')) {
+      // Cen the site icon.
+      const icon = await fs.readFile('favicon.ico');
+      // Serve it.
+      response.setHeader('Content-Type', 'image/x-icon');
+      response.write(icon, 'binary');
       response.end('');
     }
     // Otherwise, if it is for the request form:
@@ -139,7 +142,7 @@ const requestHandler = async (request, response) => {
         if (requestPath === '/testu/api/job') {
           // If the agent is authorized:
           const agent = queryParams.get('agent');
-          if (agent && ['TXRIWin', 'RIWSMac', 'PoolMac', 'PoolHome', 'PoolWin'].includes(agent)) {
+          if (agent && agents.includes(agent)) {
             console.log(`Job request received from agent ${agent}`);
             // If there are any jobs to be assigned:
             if (Object.keys(jobs.todo).length) {
@@ -166,7 +169,7 @@ const requestHandler = async (request, response) => {
           // Otherwise, i.e. if the agent is not authorized:
           else {
             // Report this.
-            console.log(`ERROR: Job request made by unauthorized agent ${agent}`);
+            console.log(`ERROR: Job request made by unauthorized agent ${agent || 'MISSING'}`);
           }
         }
         // Otherwise, i.e. if the request requires a jobID parameter:
@@ -202,11 +205,11 @@ const requestHandler = async (request, response) => {
                 let message = '';
                 const testaroRule = queryParams.get('rule');
                 if (testaroRule) {
-                  message = `&nbsp;&mdash; Rule ${testaroRule} (${queryParams.get('ruleWhat')}).`;
+                  message = `&nbsp;&mdash; Rule <code>${testaroRule}</code> (${queryParams.get('ruleWhat')}).`;
                 }
                 else {
                   const tool = queryParams.get('which');
-                  message = `&bull; Running tests of ${tool}.`;
+                  message = `&bull; Running tests of <code>${tool}</code>.`;
                 }
                 // Send it as a status update to the requester.
                 resultStreams[jobID].write(`data: ${message}\n\n`);
@@ -284,18 +287,25 @@ const requestHandler = async (request, response) => {
             'testuList', '1 target', [['target', requestData.pageWhat, requestData.pageURL]]
           );
           // Specify test isolation, standardized-only reporting, and granular reporting.
-          const job = merge(script, jobBatch, 'demo@assets23.org', true, 'only', true)[0];
-          // Add it to the jobs to be done.
-          jobs.todo[job.id] = job;
-          // Serve a result page to the requester.
-          const resultTemplate = await fs.readFile('result.html', 'utf8');
-          const resultPage = resultTemplate
-          .replace('__pageWhat__', requestData.pageWhat)
-          .replace('__pageURL__', requestData.pageURL)
-          .replace(/__jobID__/g, job.id);
-          response.setHeader('Content-Location', '/testu/result.html');
-          response.end(resultPage);
-          console.log(`Result page initialized and served`);
+          const scriptID = process.env.SCRIPT || '';
+          try{
+            const script = scriptID ? require(`./scripts/${scriptID}.json`): null;
+            const job = merge(script, jobBatch, 'demo@assets23.org', true, 'only', true)[0];
+            // Add it to the jobs to be done.
+            jobs.todo[job.id] = job;
+            // Serve a result page to the requester.
+            const resultTemplate = await fs.readFile('result.html', 'utf8');
+            const resultPage = resultTemplate
+            .replace('__pageWhat__', requestData.pageWhat)
+            .replace('__pageURL__', requestData.pageURL)
+            .replace(/__jobID__/g, job.id);
+            response.setHeader('Content-Location', '/testu/result.html');
+            response.end(resultPage);
+            console.log(`Result page initialized and served`);
+          }
+          catch(error) {
+            await serveError(`ERROR identifying script (${error.message})`, response);
+          }
         }
         // Otherwise, i.e. if the request is invalid:
         else {
