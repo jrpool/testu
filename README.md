@@ -102,7 +102,7 @@ Testu was deployed on an Amazon Web Services (AWS) EC2 server with an Ubuntu ima
 1. With `/var/www/testu` as the working directory, install the Testu dependencies (`npm install`).
 1. Check Testu with `node index`, then `^C` to quit.
 1. Use PM2 to start Testu without watching (`pm2 start index.js --name testu`). Watching is convenient for development, but it ruins the operation of Testu, because it restarts Testu whenever Testu writes a file. So, when you make changes to the code, you will need to restart PM2 (`pm2 restart testu`).
-1. Edit `/etc/nginx/sites-available` (previously revised by Certbot), to make Nginx hand HTTPS `testu` requests to the `testu` application on port 3008, as HTTP requests. Specifically, add a second `location` block immediately before or after the existing one (the order does not matter, because Nginx chooses the location with the longest matching prefix, and `/testu` is longer than `/`). The new `location` block is:
+1. Edit `/etc/nginx/sites-available/testaro.tools` (previously revised by Certbot), to make Nginx hand HTTPS `testu` requests to the `testu` application on port 3008, as HTTP requests. Specifically, add a second `location` block immediately before or after the existing one (the order does not matter, because Nginx chooses the location with the longest matching prefix, and `/testu` is longer than `/`). The new `location` block is:
 
     ```bash
     location /testu {

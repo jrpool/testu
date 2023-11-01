@@ -103,12 +103,7 @@ const requestHandler = async (request, response) => {
       const styleSheet = await fs.readFile('style.css', 'utf8');
       response.end(styleSheet);
     }
-    // Otherwise, if it is for a page script:
-    else if (requestURL === '/testu/script') {
-      // Serve it.
-      const script = await fs.readFile('script.js', 'utf8');
-      response.end(script);
-    }
+    // Otherwise, if it is for the script of the result page:
     else if (requestURL === '/testu/result') {
       // Serve it.
       const script = await fs.readFile('result.js', 'utf8');
@@ -116,7 +111,7 @@ const requestHandler = async (request, response) => {
     }
     // Otherwise, if it is for the application icon:
     else if (requestURL.includes('favicon.')) {
-      // Cen the site icon.
+      // Get the site icon.
       const icon = await fs.readFile('favicon.ico');
       // Serve it.
       response.setHeader('Content-Type', 'image/x-icon');
