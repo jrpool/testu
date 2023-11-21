@@ -13,7 +13,7 @@ const fs = require('fs/promises');
 const {score} = require('testilo/score');
 const {scorer} = require('testilo/procs/score/tsp38');
 const {digest} = require('testilo/digest');
-const {digester} = require('testilo/procs/digest/tdp37/index');
+const {digester} = require('testilo/procs/digest/tdp38/index');
 
 // ########## FUNCTIONS
 
