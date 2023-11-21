@@ -13,16 +13,15 @@ const fs = require('fs/promises');
 const http = require('http');
 // Module to create an HTTPS server and client.
 const https = require('https');
-// Module to handle Testaro jobs.
-const {batch} = require('testilo/batch');
 // URL of testu for users.
 process.env.APP_URL ??= 'http://localhost:3008/testu';
 // URL for Testilo to use as the value of sources.sendReportTo in jobs.
 process.env.REPORT_URL = `${process.env.APP_URL}/api/report`;
 // Functions from Testilo.
+const {batch} = require('testilo/batch');
 const {merge} = require('testilo/merge');
-const {scorer} = require('testilo/procs/score/tsp38');
 const {score} = require('testilo/score');
+const {scorer} = require('testilo/procs/score/tsp38');
 const {digest} = require('testilo/digest');
 const {digester} = require('testilo/procs/digest/tdp37/index');
 
