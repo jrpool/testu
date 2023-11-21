@@ -25,7 +25,7 @@ const rescore = async () => {
   await fs.mkdir('reports/rescored', {recursive: true});
   const reportIDs = reportFileNames
   .filter(fileName => fileName.endsWith('.json'))
-  .map(fileName => fileName.slice(-5));
+  .map(fileName => fileName.slice(0, -5));
   for (const reportID of reportIDs) {
     // Get it.
     const reportJSON = await fs.readFile(`reports/${reportID}.json`);
