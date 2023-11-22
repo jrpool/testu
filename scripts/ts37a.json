@@ -46,6 +46,11 @@
       "which": "testaro",
       "withItems": true,
       "stopOnFail": false
+    },
+    {
+      "type": "test",
+      "which": "wave",
+      "reportType": 4
     }
   ]
 }
