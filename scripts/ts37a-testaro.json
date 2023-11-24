@@ -11,15 +11,9 @@
     },
     {
       "type": "test",
-      "which": "axe",
-      "detailLevel": 2
-    },
-    {
-      "type": "test",
       "which": "testaro",
       "withItems": true,
-      "stopOnFail": false,
-      "rules": ["y", "bulk", "radioSet", "role"]
+      "stopOnFail": false
     }
   ]
 }

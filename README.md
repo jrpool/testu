@@ -55,7 +55,34 @@ Testu was deployed on an Amazon Web Services (AWS) EC2 server with an Ubuntu ima
 1. Create directories for the main site and web page (`sudo mkdir -p /var/www/testaro.tools/html`).
 1. Make `ubuntu` their owner and group (`sudo chown ubuntu:ubuntu /var/www/testaro.tools /var/www/testaro.tools/html`);
 1. Copy the fall-back page of the server, making it the main web page (`cp /var/www/html/index.nginx-debian.html /var/www/testaro.tools/html/index.html`).
-1. Edit it to make it the main page of the site, containing a link to run Testu, with the destination being `https://testaro.tools/testu`.
+1. Edit it to make it the main page of the site, with this content:
+
+    ```html
+    <!DOCTYPE html>
+    <html lang="en_US">
+      <head>
+        <title>Welcome to testaro.tools</title>
+        <style>
+          html {
+            color-scheme: light dark;
+          }
+          body {
+            width: 35rem;
+            margin-left: 5rem;
+          }
+        </style>
+      </head>
+      <body>
+        <h1>Welcome to testaro.tools</h1>
+        <p>Testaro performs about 960 web accessibility tests from 9 tools.</p>
+        <p>Testilo makes it easier to use Testaro.</p>
+        <p><a href="https://testaro.tools/testu">Test a web page now</a>.</p>
+        <p><a href="https://testaro.tools/scores">Compare all pages already tested</a>.</p>
+        <p><a href="https://testaro.tools/scores/credit">Get tool-issue data from the existing reports</a>.</p>
+      </body>
+    </html>
+    ```
+
 1. Create a configuration block file for the `testaro.tools` site named `/etc/nginx/sites-available/testaro.tools`. Give it this content:
 
     ```bash

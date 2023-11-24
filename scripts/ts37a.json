@@ -1,6 +1,6 @@
 {
   "id": "ts37a",
-  "what": "comprehensive accessibility tests with webkit and redirection permitted",
+  "what": "accessibility tests except WAVE with webkit and redirection permitted",
   "strict": false,
   "timeLimit": 600,
   "acts": [
@@ -11,46 +11,9 @@
     },
     {
       "type": "test",
-      "which": "alfa"
-    },
-    {
-      "type": "test",
-      "which": "aslint"
-    },
-    {
-      "type": "test",
-      "which": "axe",
-      "detailLevel": 2
-    },
-    {
-      "type": "test",
-      "which": "htmlcs"
-    },
-    {
-      "type": "test",
       "which": "ibm",
       "withItems": true,
       "withNewContent": false
-    },
-    {
-      "type": "test",
-      "which": "nuVal"
-    },
-    {
-      "type": "test",
-      "which": "qualWeb",
-      "withNewContent": false
-    },
-    {
-      "type": "test",
-      "which": "testaro",
-      "withItems": true,
-      "stopOnFail": false
-    },
-    {
-      "type": "test",
-      "which": "wave",
-      "reportType": 4
     }
   ]
 }

@@ -30,7 +30,7 @@
       "type": "test",
       "which": "ibm",
       "withItems": true,
-      "withNewContent": false
+      "withNewContent": true
     },
     {
       "type": "test",
