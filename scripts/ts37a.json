@@ -13,7 +13,27 @@
       "type": "test",
       "which": "ibm",
       "withItems": true,
+      "withNewContent": true
+    },
+    {
+      "type": "test",
+      "which": "nuVal"
+    },
+    {
+      "type": "test",
+      "which": "qualWeb",
       "withNewContent": false
+    },
+    {
+      "type": "test",
+      "which": "testaro",
+      "withItems": true,
+      "stopOnFail": false
+    },
+    {
+      "type": "test",
+      "which": "wave",
+      "reportType": 4
     }
   ]
 }
