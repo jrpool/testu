@@ -275,11 +275,12 @@ const requestHandler = async (request, response) => {
           && requestData.pageURL.startsWith('http')
           && requestData.pageWhat
         ){
-          console.log(`Job submitted to test ${requestData.pageWhat} (${requestData.pageURL})`);
+          const {pageWhat, pageURL} = requestData;
+          console.log(`Job submitted to test ${pageWhat} (${pageURL})`);
+          // Generate an ID for the target.
+          const targetID = pageWhat.replace(/[-\W]/g, '').slice(0, 20) || 'target';
           // Convert it to a Testaro job.
-          const jobBatch = batch(
-            'testuList', '1 target', [['target', requestData.pageWhat, requestData.pageURL]]
-          );
+          const jobBatch = batch('testuList', '1 target', [[targetID, pageWhat, pageURL]]);
           // Specify test isolation, standardized-only reporting, and granular reporting.
           const scriptID = process.env.SCRIPT || '';
           try{

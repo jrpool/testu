@@ -1,8 +1,8 @@
 {
-  "id": "ts38",
+  "id": "ts39",
   "what": "comprehensive accessibility tests with webkit and redirection permitted",
   "strict": false,
-  "isolate": false,
+  "isolate": true,
   "timeLimit": 600,
   "standard": "only",
   "observe": true,
