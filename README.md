@@ -19,7 +19,9 @@ Testu adopts this second strategy, so it has no need to collect messaging addres
 
 Testilo is a dependency of Testu. Testu uses Testilo to prepare jobs for Testaro and to convert Testaro reports into web-based human-oriented digests.
 
-Testaro is not a dependency of Testu. Testaro is installed on one or more workstations. Each instance of Testaro watches for jobs from the server deploying Tustu. More precisely, the Testaro instance periodically contacts the server to ask whether the server has a job for Testaro to perform. When a user asks Testu to test a web page, Testu creates a job and assigns it to the next Testaro instance that asks for a job. While the Testaro instance works on the job, Testaro sends updates to Testu, which Testu converts into server-sent events and forwards to the user agent. When Testaro finishes the job, Testaro sends its report to the server, which uses Testilo to further process the report and create a web-based digest. Testu then completes its response to the user agent with a link to the digest, which in turn contains a link to the full JSON report.
+Testaro is not a dependency of Testu. Testaro is installed on one or more workstations. Each such instance of Testaro is called an “agent”. It watches for jobs from the server that deploys Testu. More precisely, the agent periodically contacts the server to ask whether the server has a job for Testaro to perform.
+
+When a user asks Testu to test a web page, Testu creates a job and assigns it to the next agent that asks for a job. While the agent works on the job, the agent sends updates to Testu, which Testu converts into server-sent events and forwards to the user agent. When the agent finishes the job, the agent sends its report to Testu, which uses Testilo to further process the report and create a web-based digest. Testu then completes its response to the user agent with a link to the digest, which in turn contains a link to the full JSON report.
 
 ## Deployment
 
@@ -155,4 +157,4 @@ To allow testing of pages whose SSL certificates are self-signed or have unrecog
 
 Testu must accept job requests from at least one Testaro agent. The list of accepted agents is a `+`-delimited string that is the value of `AGENTS` in the `.env` file.
 
-The job that Testu submits to Testaro is derived from a Testilo script located in the `scripts` directory. The script selected for jobs is the one identified by `SCRIPT` in the `.env` file.
+The job that Testu assigns to an agent is derived from a Testilo script located in the `scripts` directory of the `testu` project. The script selected for jobs is the one identified by `SCRIPT` in the `.env` file.
