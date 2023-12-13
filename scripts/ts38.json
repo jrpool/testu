@@ -1,8 +1,12 @@
 {
-  "id": "ts37a",
+  "id": "ts38",
   "what": "comprehensive accessibility tests with webkit and redirection permitted",
   "strict": false,
+  "isolate": false,
   "timeLimit": 600,
+  "standard": "only",
+  "observe": true,
+  "timeStamp": "",
   "acts": [
     {
       "type": "placeholder",

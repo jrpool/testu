@@ -1,0 +1,35 @@
+{
+  "id": "231211T2131-test-qualWeb",
+  "what": "test",
+  "strict": false,
+  "isolate": false,
+  "timeLimit": 600,
+  "standard": "only",
+  "observe": true,
+  "timeStamp": "",
+  "acts": [
+    {
+      "type": "launch",
+      "url": "https://www.gallaudet.edu",
+      "what": "Gallaudet",
+      "which": "webkit"
+    },
+    {
+      "type": "test",
+      "which": "qualWeb",
+      "withNewContent": true
+    }
+  ],
+  "sources": {
+    "script": "test",
+    "batch": "test",
+    "target": {
+      "id": "various",
+      "which": "",
+      "what": "various"
+    },
+    "requester": "pool@jpdev.pro",
+    "sendReportTo": ""
+  },
+  "creationTime": "2023-12-11T12:00Z"
+}
