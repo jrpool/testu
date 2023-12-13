@@ -21,9 +21,9 @@ process.env.REPORT_URL = `${process.env.APP_URL}/api/report`;
 const {batch} = require('testilo/batch');
 const {merge} = require('testilo/merge');
 const {score} = require('testilo/score');
-const {scorer} = require('testilo/procs/score/tsp38');
+const {scorer} = require('testilo/procs/score/tsp39');
 const {digest} = require('testilo/digest');
-const {digester} = require('testilo/procs/digest/tdp38/index');
+const {digester} = require('testilo/procs/digest/tdp39/index');
 
 // ########## CONSTANTS
 
