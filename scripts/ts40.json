@@ -28,6 +28,10 @@
     },
     {
       "type": "test",
+      "which": "ed11y"
+    },
+    {
+      "type": "test",
       "which": "htmlcs"
     },
     {

@@ -21,12 +21,13 @@ process.env.REPORT_URL = `${process.env.APP_URL}/api/report`;
 const {batch} = require('testilo/batch');
 const {merge} = require('testilo/merge');
 const {score} = require('testilo/score');
-const {scorer} = require('testilo/procs/score/tsp39');
+const {scorer} = require('testilo/procs/score/tsp40');
 const {digest} = require('testilo/digest');
-const {digester} = require('testilo/procs/digest/tdp39/index');
+const {digester} = require('testilo/procs/digest/tdp40/index');
 
 // ########## CONSTANTS
 
+const scriptID = 'ts40';
 const protocol = process.env.PROTOCOL || 'http';
 const agents = process.env.AGENTS && process.env.AGENTS.split('+') || [];
 const jobs = {
@@ -282,9 +283,8 @@ const requestHandler = async (request, response) => {
           // Convert it to a Testaro job.
           const jobBatch = batch('testuList', '1 target', [[targetID, pageWhat, pageURL]]);
           // Specify test isolation, standardized-only reporting, and granular reporting.
-          const scriptID = process.env.SCRIPT || '';
           try{
-            const script = scriptID ? require(`./scripts/${scriptID}.json`): null;
+            const script = require(`./scripts/${scriptID}.json`);
             const job = merge(script, jobBatch, 'demo@assets23.org', true, 'only', true)[0];
             // Add it to the jobs to be done.
             jobs.todo[job.id] = job;
