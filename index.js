@@ -10,7 +10,7 @@ require('dotenv').config();
 
 // ########## CONSTANTS
 
-const v = process.env.PROC_VERSION;
+const v = process.env.SPEC_VERSION;
 const protocol = process.env.PROTOCOL || 'http';
 const agents = process.env.AGENTS && process.env.AGENTS.split('+') || [];
 const jobs = {
