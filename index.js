@@ -3,31 +3,14 @@
   Manages Testu.
 */
 
-// ########## IMPORTS
+// ########## ENVIRONMENT
 
 // Module to keep secrets local.
 require('dotenv').config();
-// Module to access files.
-const fs = require('fs/promises');
-// Module to create an HTTP server and client.
-const http = require('http');
-// Module to create an HTTPS server and client.
-const https = require('https');
-// URL of testu for users.
-process.env.APP_URL ??= 'http://localhost:3008/testu';
-// URL for Testilo to use as the value of sources.sendReportTo in jobs.
-process.env.REPORT_URL = `${process.env.APP_URL}/api/report`;
-// Functions from Testilo.
-const {batch} = require('testilo/batch');
-const {merge} = require('testilo/merge');
-const {score} = require('testilo/score');
-const {scorer} = require('testilo/procs/score/tsp40');
-const {digest} = require('testilo/digest');
-const {digester} = require('testilo/procs/digest/tdp40/index');
 
 // ########## CONSTANTS
 
-const scriptID = 'ts40';
+const v = process.env.PROC_VERSION;
 const protocol = process.env.PROTOCOL || 'http';
 const agents = process.env.AGENTS && process.env.AGENTS.split('+') || [];
 const jobs = {
@@ -46,6 +29,28 @@ const reportProperties = [
   'jobData'
 ];
 const resultStreams = {};
+
+// ########## IMPORTS
+
+// Module to access files.
+const fs = require('fs/promises');
+// Module to create an HTTP server and client.
+const http = require('http');
+// Module to create an HTTPS server and client.
+const https = require('https');
+// URL of testu for users.
+process.env.APP_URL ??= 'http://localhost:3008/testu';
+// URL for Testilo to use as the value of sources.sendReportTo in jobs.
+process.env.REPORT_URL = `${process.env.APP_URL}/api/report`;
+// Functions from Testilo.
+const {batch} = require('testilo/batch');
+const {script} = require('testilo/script');
+const {merge} = require('testilo/merge');
+const {score} = require('testilo/score');
+const {issues} = require(`testilo/procs/score/tic${v}`);
+const {scorer} = require(`testilo/procs/score/tsp${v}`);
+const {digest} = require('testilo/digest');
+const {digester} = require(`testilo/procs/digest/tdp${v}/index`);
 
 // ########## FUNCTIONS
 
@@ -281,11 +286,13 @@ const requestHandler = async (request, response) => {
           // Generate an ID for the target.
           const targetID = pageWhat.replace(/[-\W]/g, '').slice(0, 20) || 'target';
           // Convert it to a Testaro job.
-          const jobBatch = batch('testuList', '1 target', [[targetID, pageWhat, pageURL]]);
-          // Specify test isolation, standardized-only reporting, and granular reporting.
+          const jobBatch = batch(
+            'testuList', '1 target', [[pageWhat, pageURL]]
+          );
+          // Create a script.
+          const scriptObj = script('testu');
           try{
-            const script = require(`./scripts/${scriptID}.json`);
-            const job = merge(script, jobBatch, 'demo@assets23.org', true, 'only', true)[0];
+            const job = merge(scriptObj, jobBatch, 'only', true, 'user@testaro.tools', '')[0];
             // Add it to the jobs to be done.
             jobs.todo[job.id] = job;
             // Serve a result page to the requester.
@@ -299,7 +306,7 @@ const requestHandler = async (request, response) => {
             console.log(`Result page initialized and served`);
           }
           catch(error) {
-            await serveError(`ERROR identifying script (${error.message})`, response);
+            await serveError(`ERROR creating job (${error.message})`, response);
           }
         }
         // Otherwise, i.e. if the request is invalid:
