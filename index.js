@@ -292,7 +292,9 @@ const requestHandler = async (request, response) => {
           // Create a script.
           const scriptObj = script('testu');
           try{
+            // Create a job from the script and the batch.
             const job = merge(scriptObj, jobBatch, 'only', true, 'user@testaro.tools', '')[0];
+            job.sendReportTo = `${process.env.APP_URL}/api/report`;
             // Add it to the jobs to be done.
             jobs.todo[job.id] = job;
             // Serve a result page to the requester.
