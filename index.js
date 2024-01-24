@@ -24,8 +24,10 @@ const reportProperties = [
   'timeLimit',
   'acts',
   'sources',
-  'creationTime',
+  'standard',
+  'observe',
   'timeStamp',
+  'creationTimeStamp',
   'jobData'
 ];
 const resultStreams = {};
