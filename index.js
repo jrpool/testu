@@ -284,14 +284,12 @@ const requestHandler = async (request, response) => {
         ){
           const {pageWhat, pageURL} = requestData;
           console.log(`Job submitted to test ${pageWhat} (${pageURL})`);
-          // Generate an ID for the target.
-          const targetID = pageWhat.replace(/[-\W]/g, '').slice(0, 20) || 'target';
           // Convert it to a Testaro job.
           const jobBatch = batch(
             'testuList', '1 target', [[pageWhat, pageURL]]
           );
           // Create a script.
-          const scriptObj = script('testu');
+          const scriptObj = script('testu', pageWhat);
           try{
             // Create a job from the script and the batch.
             const job = merge(
@@ -344,7 +342,7 @@ const requestHandler = async (request, response) => {
             resultStreams[id].write(`data: Report ${id} received from Testaro agent ${agent}.\n\n`);
             // Score and save it.
             await fs.mkdir('reports', {recursive: true});
-            score(scorer, [report]);
+            score(scorer, report);
             await fs.writeFile(`reports/${id}.json`, `${JSON.stringify(report, null, 2)}\n`);
             // Notify the requester.
             resultStreams[id].write('data: Report scored.\n\n');
