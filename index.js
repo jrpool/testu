@@ -3,12 +3,12 @@
   Manages Testu.
 */
 
-// ########## ENVIRONMENT
+// ENVIRONMENT
 
 // Module to keep secrets local.
 require('dotenv').config();
 
-// ########## CONSTANTS
+// CONSTANTS
 
 const protocol = process.env.PROTOCOL || 'http';
 const agents = process.env.AGENTS && process.env.AGENTS.split('+') || [];
@@ -32,7 +32,7 @@ const reportProperties = [
 ];
 const resultStreams = {};
 
-// ########## IMPORTS
+// IMPORTS
 
 // Module to access files.
 const fs = require('fs/promises');
@@ -44,6 +44,8 @@ const https = require('https');
 process.env.APP_URL ??= 'http://localhost:3008/testu';
 // URL for Testilo to use as the value of sources.sendReportTo in jobs.
 process.env.REPORT_URL = `${process.env.APP_URL}/api/report`;
+// URL for digests to link to for full reports.
+process.env.SCORED_REPORT_URL = `${process.env.APP_URL}/report?jobID=__id__`;
 // Functions from Testilo.
 const {batch} = require('testilo/batch');
 const {script} = require('testilo/script');
@@ -53,7 +55,7 @@ const {scorer} = require(`testilo/procs/score/tsp${process.env.TSP_VERSION}`);
 const {digest} = require('testilo/digest');
 const {digester} = require(`testilo/procs/digest/tdp${process.env.TDP_VERSION}/index`);
 
-// ########## FUNCTIONS
+// FUNCTIONS
 
 // Serves an error message.
 const serveError = async (error, response) => {
@@ -347,8 +349,7 @@ const requestHandler = async (request, response) => {
             // Notify the requester.
             resultStreams[id].write('data: Report scored.\n\n');
             // Digest it and save the digest.
-            const digests = await digest(digester, report);
-            const jobDigest = Object.values(digests)[0];
+            const jobDigest = await digest(digester, report);
             await fs.writeFile(`reports/${id}.html`, jobDigest);
             // Notify the requester.
             const digestURL = `${process.env.APP_URL}/digest?jobID=${id}`;
