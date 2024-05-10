@@ -10,7 +10,6 @@ require('dotenv').config();
 
 // ########## CONSTANTS
 
-const v = process.env.SPEC_VERSION;
 const protocol = process.env.PROTOCOL || 'http';
 const agents = process.env.AGENTS && process.env.AGENTS.split('+') || [];
 const jobs = {
@@ -50,10 +49,9 @@ const {batch} = require('testilo/batch');
 const {script} = require('testilo/script');
 const {merge} = require('testilo/merge');
 const {score} = require('testilo/score');
-const {issues} = require(`testilo/procs/score/tic${v}`);
-const {scorer} = require(`testilo/procs/score/tsp${v}`);
+const {scorer} = require(`testilo/procs/score/tsp${process.env.TSP_VERSION}`);
 const {digest} = require('testilo/digest');
-const {digester} = require(`testilo/procs/digest/tdp${v}/index`);
+const {digester} = require(`testilo/procs/digest/tdp${process.env.TDP_VERSION}/index`);
 
 // ########## FUNCTIONS
 
