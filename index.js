@@ -294,7 +294,9 @@ const requestHandler = async (request, response) => {
           const scriptObj = script('testu');
           try{
             // Create a job from the script and the batch.
-            const job = merge(scriptObj, jobBatch, 'only', true, 'user@testaro.tools', '')[0];
+            const job = merge(
+              scriptObj, jobBatch, 'only', true, 'user@testaro.tools', '', 'default'
+            )[0];
             job.sendReportTo = `${process.env.APP_URL}/api/report`;
             job.getReportFrom = `/testu/report?jobID=${job.id}`;
             // Add it to the jobs to be done.

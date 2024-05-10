@@ -1,6 +1,6 @@
 {
   "name": "testu",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "Ask Testaro and Testilo to test and score a web page for accessibility",
   "main": "index.js",
   "scripts": {
