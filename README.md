@@ -156,5 +156,3 @@ Testu was deployed on an Amazon Web Services (AWS) EC2 server with an Ubuntu ima
 To allow testing of pages whose SSL certificates are self-signed or have unrecognized certificate authorities, you can change the value of `REJECT_UNAUTHORIZED` in the `.env` file to `false`.
 
 Testu must accept job requests from at least one Testaro agent. The list of accepted agents is a `+`-delimited string that is the value of `AGENTS` in the `.env` file.
-
-The job that Testu assigns to an agent is derived from a Testilo script located in the `scripts` directory of the `testu` project. The script selected for jobs is the one identified by `SCRIPT` in the `.env` file.
