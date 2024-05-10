@@ -347,7 +347,7 @@ const requestHandler = async (request, response) => {
             // Notify the requester.
             resultStreams[id].write('data: Report scored.\n\n');
             // Digest it and save the digest.
-            const digests = await digest(digester, [report]);
+            const digests = await digest(digester, report);
             const jobDigest = Object.values(digests)[0];
             await fs.writeFile(`reports/${id}.html`, jobDigest);
             // Notify the requester.
