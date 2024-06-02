@@ -29,6 +29,9 @@ caption {
   font-weight: 700;
   font-style: italic;
 }
+.center {
+  text-align: center;
+}
 code {
   font-family: sans-serif;
   color: #832703;

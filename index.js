@@ -20,14 +20,18 @@ const reportProperties = [
   'id',
   'what',
   'strict',
-  'timeLimit',
-  'acts',
-  'sources',
+  'isolate',
   'standard',
   'observe',
-  'timeStamp',
+  'device',
+  'browserID',
+  'timeLimit',
   'creationTimeStamp',
-  'getReportFrom',
+  'executionTimeStamp',
+  'sendReportTo',
+  'target',
+  'sources',
+  'acts',
   'jobData'
 ];
 const resultStreams = {};
@@ -291,14 +295,11 @@ const requestHandler = async (request, response) => {
             'testuList', '1 target', [[pageWhat, pageURL]]
           );
           // Create a script.
-          const scriptObj = script('testu', pageWhat);
+          const scriptObj = script('testu', pageWhat, 'default', {});
           try{
             // Create a job from the script and the batch.
-            const job = merge(
-              scriptObj, jobBatch, 'only', true, 'user@testaro.tools', '', 'default'
-            )[0];
+            const job = merge(scriptObj, jobBatch, '')[0];
             job.sendReportTo = `${process.env.APP_URL}/api/report`;
-            job.getReportFrom = `/testu/report?jobID=${job.id}`;
             // Add it to the jobs to be done.
             jobs.todo[job.id] = job;
             // Serve a result page to the requester.
