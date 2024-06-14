@@ -20,7 +20,6 @@ const reportProperties = [
   'id',
   'what',
   'strict',
-  'isolate',
   'standard',
   'observe',
   'device',
