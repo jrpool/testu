@@ -347,12 +347,14 @@ const requestHandler = async (request, response) => {
             score(scorer, report);
             await fs.writeFile(`reports/${id}.json`, `${JSON.stringify(report, null, 2)}\n`);
             // Notify the requester.
+            console.log('Report scored');
             resultStreams[id].write('data: Report scored.\n\n');
             // Digest it and save the digest.
             const jobDigest = await digest(digester, report);
             await fs.writeFile(`reports/${id}.html`, jobDigest);
             // Notify the requester.
             const digestURL = `${process.env.APP_URL}/digest?jobID=${id}`;
+            console.log('Report digested');
             resultStreams[id].write(
               `data: Report digested. <a href="${digestURL}">Get the digest</a>.\n\n`
             );
